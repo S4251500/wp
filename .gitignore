@@ -1,0 +1,13 @@
+*.DS_Store
+
+# Ignore everything inside assets/images/covers
+a2/assets/images/covers/*
+
+# Except .gitkeep
+!a2/assets/images/covers/.gitkeep
+
+# Ignore everything inside assets/images/covers
+a3/assets/images/covers/*
+
+# Except .gitkeep
+!a3/assets/images/covers/.gitkeep
