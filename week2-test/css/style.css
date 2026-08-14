@@ -8,6 +8,10 @@ body {
     margin: auto;
 }
 
+div {
+    column-count: 3;
+}
+
 .logo-background {
     background-image: url('../images/logo.jpeg');
     background-repeat: no-repeat;
@@ -70,3 +74,4 @@ main {
     padding: 20px;
     box-sizing: border-box;
 }
+

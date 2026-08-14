@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add Book - BookVerse</title>
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <script defer src="./assets/js/scripts.js"></script>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="nav-logo"><a href="index.html"><img src="./assets/images/logo.png" alt="Logo" class="logo-img"><span
+                    class="site-title">BookVerse</span></a></div>
+        <ul class="nav-links">
+            <li><a href="index.html"><span class="nav-link-icon" aria-hidden="true"></span>Home</a></li>
+            <li><a href="books.html"><span class="nav-link-icon" aria-hidden="true"></span>Browse Books</a></li>
+            <li><a href="gallery.html"><span class="nav-link-icon" aria-hidden="true"></span>Gallery</a></li>
+            <li><a href="add.html"><span class="nav-link-icon" aria-hidden="true"></span>Add Book</a></li>
+        </ul>
+    </header>
+
+    <main class="container content">
+        <h1>Add Book</h1>
+        <form class="card" id="addBookForm">
+            <label for="title">Title</label>
+            <input id="title" name="title" placeholder="Book title">
+            <label for="cover">Cover file</label>
+            <input type="file" id="cover" name="cover">
+            <div id="coverMsg" class="text-muted"></div>
+            <div style="margin-top:1rem;">
+                <button type="button" class="btn"
+                    onclick="if(showFileValidationMessage(document.getElementById('cover'), ['jpg','jpeg','png'], document.getElementById('coverMsg'))) { alert('File looks good'); }">Upload</button>
+            </div>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div><small>&copy; 2026 s123456. Your Gateway to Books.</small></div>
+            <ul class="footer-links">
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">Privacy</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+
+</html>
