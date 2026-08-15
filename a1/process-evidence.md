@@ -77,31 +77,76 @@ How did you confirm the fix?
 ## AI Task 1
 
 **Date:**  
-(e.g., 15/03/2026)
+15/08/2026
 
 **Task Description:**  
-What were you trying to do?
+Change the colour of the SVG logo image 
 
 **Tool Used:**  
-(e.g., GitHub Copilot, ChatGPT)
+Built in GitHub Copilot agent 
 
 **Prompt / Input:**  
-(What did you type?)
+how can i change the colour of the svg image to be the amber colour in the css file 
 
 **AI Output Summary:**  
-(What did it generate?)
+I’ll check the SVG and the CSS in your assignment so I can show the exact change to make it amber.
+
+## Change the logo to amber
+
+The key point is that your logo is loaded with an `<img>` in `index.html`, so CSS `fill` usually does not affect an external SVG file.
+
+Your CSS in `style.css` already defines the amber colour:
+
+```css
+--accent-amber: #fbbf24;
+```
+
+### Option 1: easiest for your current setup
+Use a CSS filter on the image:
+
+```css
+.logo-img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 0.6rem;
+    display: inline-block;
+    filter: brightness(0) saturate(100%) sepia(1) hue-rotate(-20deg) saturate(5) brightness(1.1);
+}
+```
+
+This makes the SVG look amber without editing the image file itself.
+
+### Option 2: best if you want the SVG itself to be amber
+Open the SVG file and change the colour values inside it to:
+
+```css
+fill: #fbbf24;
+```
+
+or directly set a path fill like:
+
+```svg
+<path fill="#fbbf24" ... />
+```
+
+> If the SVG is in an `img` tag, `fill` in CSS will not work. The filter method works on external SVGs, while editing the SVG file itself is the permanent fix.
+
+If you want, I can also tell you the exact filter value to match your site’s amber branding more closely.
 
 **What You Accepted:**  
-(Which parts did you keep?)
+I had already tried the fill tag in the CSS file, so I opted to edit the SVG files manually to change the colour to the amber colour 
 
 **What You Changed:**  
-(What did you modify and why?)
+inside 'BookVerse.svg'
+color: #FFFFFF > color: #fbbf24
 
 **Validation Performed:**  
-How did you test correctness?
+I would say it was fairly correct as in theory both options provided would have worked, however it clearly reccomended the manual editing to preform the colour change over using the fill CSS tag.
 
 **Issues Identified:**  
-(Any errors or problems in AI output?)
+I already knew the fill command didn't work however the alternative provided by Copilot did work.
 
 ---
 
