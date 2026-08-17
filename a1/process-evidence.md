@@ -155,21 +155,49 @@ I already knew the fill command didn't work however the alternative provided by 
 **Date:**  
 
 **Task Description:**  
-
+Built in GitHub Copilot agent 
 **Tool Used:**  
-
+VSC AI
 **Prompt / Input:**  
-
+make a modal similar to the one in the image provided using bootstrap, this is to be made in the gallery html file, do not connect it to any biutton yet, but ensure it is capable of being triggered. 
 **AI Output Summary:**  
+I’m opening the gallery page and the existing Bootstrap setup so I can match the modal structure and styling to the project without changing unrelated files.
+
+The gallery page is straightforward, so I’m adding a Bootstrap modal structure and a matching dark theme to the existing layout without wiring it to any visible button yet.
+
+I’ve matched the modal layout, and I’m removing the temporary trigger so it stays unbound until you decide which element should open it.
+
+## ✅ Gallery modal added
+
+I added a Bootstrap modal to `gallery.html` and matched the styling in `style.css` to the reference design.
+
+### Included
+- Bootstrap CDN setup
+- Modal markup with a dark gallery-style layout
+- Caption and navigation area styled to match the mockup
+- Modal is ready to trigger using:
+  - `data-bs-toggle="modal"`
+  - `data-bs-target="#galleryModal"`
+
+### Not connected yet
+- No button/image is wired to open it yet
+- This keeps it ready for later attachment to whichever gallery item you choose
+
+If you want, I can next connect it to one of the cover images in the gallery.
 
 **What You Accepted:**  
+Accepted all edits 
 
 **What You Changed:**  
+Nothing currently
 
 **Validation Performed:**  
+Issues with the modal position
 
 **Issues Identified:**  
+The modal popup was showing up on the right of the screen (not centered)
 
+The visual style of the modal was a bit messed up, changing the AI's created css was easy to fix the visual differences.
 ---
 
 # 📌 Final Reflection (End of Assessment)

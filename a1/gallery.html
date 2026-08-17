@@ -5,7 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gallery - BookVerse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script defer src="./assets/js/scripts.js"></script>
 </head>
 
@@ -34,22 +36,68 @@
 
 
     <main class="container content">
-        <h1><img src="./assets/images/galleryIcon.svg"></img>Book Cover Gallery</h1>
+        <h1><img src="./assets/images/gallerySearch.svg"></img> Book Cover Gallery</h1>
         <section class="gallery-grid" aria-label="Book cover gallery">
-            <img src="./assets/images/covers/1.png" alt="Book cover 1">
-            <img src="./assets/images/covers/2.png" alt="Book cover 2">
-            <img src="./assets/images/covers/3.png" alt="Book cover 3">
-            <img src="./assets/images/covers/4.png" alt="Book cover 4">
-            <img src="./assets/images/covers/5.png" alt="Book cover 5">
-            <img src="./assets/images/covers/6.png" alt="Book cover 6">
-            <img src="./assets/images/covers/7.png" alt="Book cover 7">
-            <img src="./assets/images/covers/8.png" alt="Book cover 8">
-            <img src="./assets/images/covers/9.png" alt="Book cover 9">
-            <img src="./assets/images/covers/10.png" alt="Book cover 10">
-            <img src="./assets/images/covers/11.png" alt="Book cover 11">
-            <img src="./assets/images/covers/12.png" alt="Book cover 12">
+            <img src="./assets/images/covers/1.png" alt="Book cover 1" class="gallery-img" data-image-index="0"
+                data-book-title="Book 1" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/2.png" alt="Book cover 2" class="gallery-img" data-image-index="1"
+                data-book-title="Book 2" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/3.png" alt="Book cover 3" class="gallery-img" data-image-index="2"
+                data-book-title="Book 3" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/4.png" alt="Book cover 4" class="gallery-img" data-image-index="3"
+                data-book-title="Book 4" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/5.png" alt="Book cover 5" class="gallery-img" data-image-index="4"
+                data-book-title="Book 5" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/6.png" alt="Book cover 6" class="gallery-img" data-image-index="5"
+                data-book-title="Book 6" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/7.png" alt="Book cover 7" class="gallery-img" data-image-index="6"
+                data-book-title="Book 7" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/8.png" alt="Book cover 8" class="gallery-img" data-image-index="7"
+                data-book-title="Book 8" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/9.png" alt="Book cover 9" class="gallery-img" data-image-index="8"
+                data-book-title="Book 9" data-bs-toggle="modal" data-bs-target="#galleryModal" style="cursor: pointer;">
+            <img src="./assets/images/covers/10.png" alt="Book cover 10" class="gallery-img" data-image-index="9"
+                data-book-title="Book 10" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                style="cursor: pointer;">
+            <img src="./assets/images/covers/11.png" alt="Book cover 11" class="gallery-img" data-image-index="10"
+                data-book-title="Book 11" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                style="cursor: pointer;">
+            <img src="./assets/images/covers/12.png" alt="Book cover 12" class="gallery-img" data-image-index="11"
+                data-book-title="Book 12" data-bs-toggle="modal" data-bs-target="#galleryModal"
+                style="cursor: pointer;">
         </section>
+
     </main>
+
+    <div class="modal fade gallery-modal" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered gallery-modal-dialog">
+            <div class="modal-content gallery-modal-content">
+                <div class="modal-header gallery-modal-header">
+                    <h2 class="modal-title gallery-modal-title" id="galleryModalLabel"></h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body gallery-modal-body">
+                    <div class="gallery-modal-stage">
+                        <div class="gallery-modal-preview">
+                            <img src="" alt="Selected book cover" class="gallery-modal-image" id="modalImage">
+                        </div>
+                    </div>
+
+                    <div class="gallery-modal-actions">
+                        <button type="button" class="btn btn-light btn-prev" aria-label="Previous image">
+                            <span aria-hidden="true">&lsaquo;</span> Previous
+                        </button>
+                        <button type="button" class="btn btn-light btn-next" aria-label="Next image">
+                            Next <span aria-hidden="true">&rsaquo;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container footer-content">
