@@ -20,6 +20,16 @@
     --bg-light: #f9fafb;
     --bg-white: #ffffff;
     --border: #e5e7eb;
+
+    --body-text: 'Elms Sans',
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial;
+    --header-text: 'Righteous',
+        cursive;
 }
 
 /* Base reset */
@@ -33,7 +43,7 @@ body {
     height: 100%;
     margin: 0;
     display: flex;
-    font-family: 'Elms Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    font-family: var(--body-text);
     color: var(--text-dark);
     background: radial-gradient(ellipse at center, #071428 0%, #061626 60%, #04101b 100%);
     font-weight: 400;
@@ -68,7 +78,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Righteous', cursive;
+    font-family: var(--header-text);
     color: #e6f7fb;
     margin: 0 0 0.5rem 0;
 }
@@ -281,11 +291,144 @@ h6 {
 
 /* Cards */
 .card {
-    background: #ffffff;
+    max-width: 80%;
+    width: 800px;
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.03);
     padding: 1rem;
     border-radius: 8px;
+}
 
+.card div {
+    background: inherit;
+    padding: 1rem;
+}
+
+.card label {
+    font-family: var(--header-text);
+    color: #e6f7fb;
+    margin: 0 0 0.5rem 0;
+}
+
+/* Add book form */
+.add-content {
+    width: min(100%, 560px);
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.add-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 1.55rem;
+    margin-bottom: 1rem;
+}
+
+.add-title img {
+    width: 18px;
+    height: 18px;
+}
+
+.add-form {
+    max-width: none;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 0.8rem;
+    padding: 1rem;
+    background: rgba(31, 43, 62, 0.94);
+    border: 1px solid rgba(124, 151, 176, 0.12);
+    border-radius: 6px;
+}
+
+.add-form .form-field {
+    padding: 0;
+}
+
+.add-form .full-width {
+    grid-column: 1 / -1;
+}
+
+.add-form label {
+    display: block;
+    font-family: var(--header-text);
+    font-size: 0.72rem;
+    color: #e6f7fb;
+    margin-bottom: 0.3rem;
+}
+
+.add-form input:not([type="checkbox"]),
+.add-form select,
+.add-form textarea {
+    width: 100%;
+    border: 1px solid rgba(139, 160, 187, 0.25);
+    border-radius: 4px;
+    background: rgba(7, 15, 36, 0.72);
+    color: #dbeef2;
+    font: 0.72rem var(--body-text);
+    padding: 0.55rem 0.6rem;
+}
+
+.add-form input:not([type="checkbox"]),
+.add-form select {
+    height: 35px;
+}
+
+.add-form select {
+    appearance: auto;
+}
+
+.add-form textarea {
+    min-height: 58px;
+    resize: vertical;
+}
+
+.add-form input::placeholder,
+.add-form textarea::placeholder {
+    color: #8794ae;
+}
+
+.add-form input[type="file"] {
+    padding: 0.25rem;
+}
+
+.add-form input[type="file"]::file-selector-button {
+    border: 0;
+    border-radius: 4px;
+    padding: 0.3rem 0.55rem;
+    margin-right: 0.4rem;
+    color: #172033;
+    background: #e8edf4;
+    cursor: pointer;
+}
+
+.agreement {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.1rem 0 0;
+    font-size: 0.68rem !important;
+}
+
+.agreement input {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    accent-color: var(--color-primary);
+}
+
+.add-submit {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 0.55rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.add-form .btn:hover {
+    background: var(--color-primary-light);
 }
 
 /* Books Card */
