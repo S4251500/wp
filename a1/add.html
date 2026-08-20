@@ -20,33 +20,35 @@
 
         <nav aria-label="Main navigation">
             <ul class="nav-links">
-                <li><a href="index.html"><img src="./assets/images/home.png" class="nav-link-icon"
+                <li><a href="index.html"><img src="./assets/images/home.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Home</a></li>
-                <li><a href="books.html"><img src="./assets/images/browse.png" class="nav-link-icon"
+                <li><a href="books.html"><img src="./assets/images/browse.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Browse Books</a></li>
-                <li><a href="gallery.html"><img src="./assets/images/gallery.png" class="nav-link-icon"
+                <li><a href="gallery.html"><img src="./assets/images/galleryIcon.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Gallery</a></li>
-                <li><a href="add.html"><img src="./assets/images/addBook.png" class="nav-link-icon"
+                <li><a href="add.html"><img src="./assets/images/add.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Add Book</a></li>
             </ul>
         </nav>
     </header>
 
     <main class="container content add-content">
-        <h1 class="add-title"><img src="./assets/images/addBook.png" alt="">Add New Book</h1>
-        <form class="card add-form" id="addBookForm">
+        <h1 class="add-title"><img src="./assets/images/addIcon.svg" alt="">Add New Book</h1>
+        <form class="add-form" id="addBookForm">
             <div class="form-field full-width">
-                <label for="book-title">Book Title</label>
+                <label for="book-title"><img src="./assets/images/title.svg" alt="" aria-hidden="true">Book
+                    Title</label>
                 <input type="text" id="book-title" name="title" placeholder="Enter book title">
             </div>
 
             <div class="form-field full-width">
-                <label for="author-name">Author Name</label>
+                <label for="author-name"><img src="./assets/images/author.svg" alt="" aria-hidden="true">Author
+                    Name</label>
                 <input type="text" id="author-name" name="author" placeholder="Enter author name">
             </div>
 
             <div class="form-field full-width">
-                <label for="genre">Genre</label>
+                <label for="genre"><img src="./assets/images/genre.svg" alt="" aria-hidden="true">Genre</label>
                 <select id="genre" name="genre">
                     <option value="" selected>Select a genre</option>
                     <option>Fiction</option>
@@ -57,12 +59,13 @@
             </div>
 
             <div class="form-field">
-                <label for="publication-year">Publication Year</label>
+                <label for="publication-year"><img src="./assets/images/year.svg" alt="" aria-hidden="true">Publication
+                    Year</label>
                 <input name="year" placeholder="2024">
             </div>
 
             <div class="form-field">
-                <label for="price">Price ($)</label>
+                <label for="price"><img src="./assets/images/money.svg" alt="" aria-hidden="true">Price ($)</label>
                 <input name="price" placeholder="19.99">
             </div>
 
@@ -72,7 +75,8 @@
             </div>
 
             <div class="form-field">
-                <label for="condition">Book Condition</label>
+                <label for="condition"><img src="./assets/images/bookCondition.svg" alt="" aria-hidden="true">Book
+                    Condition</label>
                 <select id="condition" name="condition">
                     <option value="" selected>Select condition</option>
                     <option>New</option>
@@ -82,17 +86,20 @@
             </div>
 
             <div class="form-field full-width">
-                <label for="description">Description</label>
+                <label for="description"><img src="./assets/images/writeDescription.svg" alt=""
+                        aria-hidden="true">Description</label>
                 <textarea id="description" name="description" placeholder="Describe the book..."></textarea>
             </div>
 
             <div class="form-field full-width">
-                <label for="cover">Upload Cover Image</label>
+                <label for="cover"><img src="./assets/images/uploadImage.svg" alt="" aria-hidden="true">Upload Cover
+                    Image</label>
                 <input type="file" id="cover" name="cover" accept=".jpg,.jpeg,.png">
             </div>
 
             <div class="form-field full-width">
-                <label for="availability">Availability Status</label>
+                <label for="availability"><img src="./assets/images/availability.svg" alt=""
+                        aria-hidden="true">Availability Status</label>
                 <select id="availability" name="availability">
                     <option selected>Available</option>
                     <option>Reserved</option>
@@ -102,7 +109,8 @@
 
             <label class="agreement" for="agreement">
                 <input type="checkbox" id="agreement" name="agreement">
-                <span>I agree that this book information is accurate and complete</span>
+                <span>I agree that this book information
+                    is accurate and complete</span>
             </label>
 
             <button type="button" class="btn add-submit">Add Book to Collection</button>

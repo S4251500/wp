@@ -1,24 +1,4 @@
-/* Common site JavaScript
-   - file extension validation: validateFileExtension(inputElement, allowedExtensions)
-   - simple modal helpers: openModal(id), closeModal(id)
-*/
-
-function validateFileExtension(inputElement, allowedExtensions) {
-    if (!inputElement || !inputElement.value) return false;
-    const fileName = inputElement.value.split('\\').pop();
-    const ext = (fileName.split('.').pop() || '').toLowerCase();
-    return allowedExtensions.map(e => e.toLowerCase()).includes(ext);
-}
-
-function showFileValidationMessage(inputElement, allowedExtensions, msgElement) {
-    const ok = validateFileExtension(inputElement, allowedExtensions);
-    if (!ok) {
-        msgElement && (msgElement.textContent = `Invalid file type. Allowed: ${allowedExtensions.join(', ')}`);
-        return false;
-    }
-    msgElement && (msgElement.textContent = '');
-    return true;
-}
+// Gallery page
 
 function openModal(id) {
     const backdrop = document.getElementById(id);
@@ -113,6 +93,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+// Book Filter page
+
+function validateFileExtension(inputElement, allowedExtensions) {
+    if (!inputElement || !inputElement.value) return false;
+    const fileName = inputElement.value.split('\\').pop();
+    const ext = (fileName.split('.').pop() || '').toLowerCase();
+    return allowedExtensions.map(e => e.toLowerCase()).includes(ext);
+}
+
+function showFileValidationMessage(inputElement, allowedExtensions, msgElement) {
+    const ok = validateFileExtension(inputElement, allowedExtensions);
+    if (!ok) {
+        msgElement && (msgElement.textContent = `Invalid file type. Allowed: ${allowedExtensions.join(', ')}`);
+        return false;
+    }
+    msgElement && (msgElement.textContent = '');
+    return true;
+}
+
 const booksList = [
     { id: 1, title: "The Midnight Library", author: "Matt Haig", genre: "Fiction", year: 2020, price: "$24.99", status: "available" },
     { id: 2, title: "Project Hail Mary", author: "Andy Weir", genre: "Science Fiction", year: 2021, price: "$28.99", status: "available" },
@@ -128,11 +128,7 @@ const booksList = [
     { id: 12, title: "Sapiens", author: "Yuval Noah Harari", genre: "Non-Fiction", year: 2014, price: "$27.99", status: "available" }
 ];
 
-
-/**
- * Render books to the DOM
- * @param {Array} books - Array of book objects to render
- */
+// what to render 
 function renderBooks(books) {
     const booksList_el = document.getElementById('booksList');
     if (!booksList_el) return;
@@ -154,10 +150,7 @@ function renderBooks(books) {
     `).join('');
 }
 
-/**
- * Filter books by status
- * @param {string} status - Status to filter by ('all' shows all books)
- */
+// filter books by status
 function filterBooksByStatus(status) {
     const booksList_el = document.getElementById('booksList');
 
@@ -208,3 +201,49 @@ document.addEventListener('DOMContentLoaded', function () {
 // Export for potential external use
 window.filterBooksByStatus = filterBooksByStatus;
 window.renderBooks = renderBooks;
+
+// Home page featured book carousel
+document.addEventListener('DOMContentLoaded', function () {
+    const carouselImage = document.getElementById('carouselImage');
+    if (!carouselImage) return;
+
+    const carouselBooks = [
+        { src: './assets/images/covers/1.png', title: 'The Midnight Library', description: 'Discover your next great read.' },
+        { src: './assets/images/covers/2.png', title: 'Project Hail Mary', description: 'Explore a new story today.' },
+        { src: './assets/images/covers/3.png', title: 'Dune', description: 'Find a book to lose yourself in.' }
+    ];
+    const carouselTitle = document.getElementById('carouselTitle');
+    const carouselDescription = document.getElementById('carouselDescription');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    let carouselIndex = 0;
+
+    function showCarouselBook(index) {
+        carouselIndex = (index + carouselBooks.length) % carouselBooks.length;
+        const book = carouselBooks[carouselIndex];
+
+        carouselImage.src = book.src;
+        carouselImage.alt = book.title;
+        carouselTitle.textContent = book.title;
+        carouselDescription.textContent = book.description;
+
+        indicators.forEach((indicator, indicatorIndex) => {
+            const isActive = indicatorIndex === carouselIndex;
+            indicator.classList.toggle('active', isActive);
+            indicator.setAttribute('aria-current', isActive ? 'true' : 'false');
+        });
+    }
+
+    document.querySelector('.carousel-control-prev').addEventListener('click', function () {
+        showCarouselBook(carouselIndex - 1);
+    });
+    document.querySelector('.carousel-control-next').addEventListener('click', function () {
+        showCarouselBook(carouselIndex + 1);
+    });
+    indicators.forEach((indicator, indicatorIndex) => {
+        indicator.addEventListener('click', function () {
+            showCarouselBook(indicatorIndex);
+        });
+    });
+
+    setInterval(() => showCarouselBook(carouselIndex + 1), 5000);
+});

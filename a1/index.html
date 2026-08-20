@@ -20,23 +20,96 @@
 
         <nav aria-label="Main navigation">
             <ul class="nav-links">
-                <li><a href="index.html"><img src="./assets/images/home.png" class="nav-link-icon"
+                <li><a href="index.html"><img src="./assets/images/home.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Home</a></li>
-                <li><a href="books.html"><img src="./assets/images/browse.png" class="nav-link-icon"
+                <li><a href="books.html"><img src="./assets/images/browse.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Browse Books</a></li>
-                <li><a href="gallery.html"><img src="./assets/images/gallery.png" class="nav-link-icon"
+                <li><a href="gallery.html"><img src="./assets/images/galleryIcon.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Gallery</a></li>
-                <li><a href="add.html"><img src="./assets/images/addBook.png" class="nav-link-icon"
+                <li><a href="add.html"><img src="./assets/images/add.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Add Book</a></li>
             </ul>
         </nav>
     </header>
 
-
+    <section class="hero-carousel" aria-label="Featured book covers">
+        <div class="carousel-slide">
+            <img id="carouselImage" src="./assets/images/covers/1.png" alt="Featured book cover 1">
+            <div class="carousel-caption">
+                <h3 id="carouselTitle">The Midnight Library</h3>
+            </div>
+        </div>
+        <button class="carousel-control carousel-control-prev" type="button" aria-label="Show previous featured book">
+            <span aria-hidden="true">&#10094;</span>
+        </button>
+        <button class="carousel-control carousel-control-next" type="button" aria-label="Show next featured book">
+            <span aria-hidden="true">&#10095;</span>
+        </button>
+    </section>
 
     <main class="container content">
-        <h1>Welcome to BookVerse</h1>
-        <p class="text-muted">Your gateway to books — browse, add, and enjoy the cover gallery.</p>
+        <section class="featured-books" aria-labelledby="featured-books-title">
+            <h1 id="featured-books-title"><img src="./assets/images/favourite.svg" alt="" aria-hidden="true"> Featured
+                Books</h1>
+            <div class="featured-books-grid">
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/1.png" alt="The Midnight Library cover">
+                    <h3>The Midnight Library</h3>
+                    <p>Fiction &middot; Matt Haig</p>
+                    <strong>$24.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/2.png" alt="Project Hail Mary cover">
+                    <h3>Project Hail Mary</h3>
+                    <p>Science Fiction &middot; Andy Weir</p>
+                    <strong>$28.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/3.png" alt="Dune cover">
+                    <h3>Dune</h3>
+                    <p>Science Fiction &middot; Frank Herbert</p>
+                    <strong>$22.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/4.png" alt="The Hobbit cover">
+                    <h3>The Hobbit</h3>
+                    <p>Fantasy &middot; J.R.R. Tolkien</p>
+                    <strong>$18.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/5.png" alt="1984 cover">
+                    <h3>1984</h3>
+                    <p>Dystopian &middot; George Orwell</p>
+                    <strong>$16.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/6.png" alt="Pride and Prejudice cover">
+                    <h3>Pride and Prejudice</h3>
+                    <p>Romance &middot; Jane Austen</p>
+                    <strong>$14.99</strong>
+                    <span class="book-badge reserved">Reserved</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/7.png" alt="To Kill a Mockingbird cover">
+                    <h3>To Kill a Mockingbird</h3>
+                    <p>Fiction &middot; Harper Lee</p>
+                    <strong>$19.99</strong>
+                    <span class="book-badge available">Available</span>
+                </article>
+                <article class="featured-book-card">
+                    <img src="./assets/images/covers/8.png" alt="The Great Gatsby cover">
+                    <h3>The Great Gatsby</h3>
+                    <p>Fiction &middot; F. Scott Fitzgerald</p>
+                    <strong>$15.99</strong>
+                    <span class="book-badge sold">Sold</span>
+                </article>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
