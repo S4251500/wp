@@ -22,31 +22,33 @@ You must maintain this file throughout development.
 ## Bug 1
 
 **Date Identified:**  
-(e.g., 15/03/2026)
+28/09/2026
 
 **Date Fixed:**  
-(e.g., 15/03/2026)
+28/09/2026
 
 **File:**  
-(e.g., about.html)
+assets/includes/nav.inc
 
 **Related Commit:**  
-(e.g., abc1234)
+Commit 1
 
 **Symptom:**  
-What went wrong?
+Clicking the BookVerse logo in the navigation caused an error because the link pointed to a page that did not exist in the project.
 
 **Steps to Reproduce:**  
-How can the issue be triggered?
+1. Open any page in the `a2` project.
+2. Click the BookVerse logo in the navigation bar.
+3. Observe that the link attempts to open `index.html` and produces an error because that file is not present.
 
 **Root Cause:**  
-Why did the issue occur?
+The navigation logo still referenced `index.html`, but the project uses `index.php` as its home page and no longer contained `index.html`.
 
 **Fix:**  
-What did you change?
+Changed the logo link in `assets/includes/nav.inc` from `index.html` to `index.php`.
 
 **Verification:**  
-How did you confirm the fix?
+Opened the navigation on the PHP pages and clicked the BookVerse logo. It now navigates to `index.php` without an error.
 
 ---
 

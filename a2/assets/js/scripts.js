@@ -1,49 +1,22 @@
-// Gallery page
-
-function openModal(id) {
-    const backdrop = document.getElementById(id);
-    if (!backdrop) return;
-    backdrop.classList.add('show');
-    backdrop.style.display = 'flex';
-}
-
-function closeModal(id) {
-    const backdrop = document.getElementById(id);
-    if (!backdrop) return;
-    backdrop.classList.remove('show');
-    backdrop.style.display = 'none';
-}
-
-// Close modal when clicking backdrop
-document.addEventListener('click', function (e) {
-    const target = e.target;
-    if (target.classList && target.classList.contains('modal-backdrop')) {
-        target.classList.remove('show');
-        target.style.display = 'none';
-    }
-});
-
-// Export functions for inline use
+// Keep these helpers available for the add-book form when it is connected later.
 window.validateFileExtension = validateFileExtension;
 window.showFileValidationMessage = showFileValidationMessage;
-window.openModal = openModal;
-window.closeModal = closeModal;
 
 // Gallery Image Cycling
 let currentImageIndex = 0;
 const galleryImages = [
-    { index: 0, src: './assets/images/covers/1.png', title: 'Book 1' },
-    { index: 1, src: './assets/images/covers/2.png', title: 'Book 2' },
-    { index: 2, src: './assets/images/covers/3.png', title: 'Book 3' },
-    { index: 3, src: './assets/images/covers/4.png', title: 'Book 4' },
-    { index: 4, src: './assets/images/covers/5.png', title: 'Book 5' },
-    { index: 5, src: './assets/images/covers/6.png', title: 'Book 6' },
-    { index: 6, src: './assets/images/covers/7.png', title: 'Book 7' },
-    { index: 7, src: './assets/images/covers/8.png', title: 'Book 8' },
-    { index: 8, src: './assets/images/covers/9.png', title: 'Book 9' },
-    { index: 9, src: './assets/images/covers/10.png', title: 'Book 10' },
-    { index: 10, src: './assets/images/covers/11.png', title: 'Book 11' },
-    { index: 11, src: './assets/images/covers/12.png', title: 'Book 12' }
+    { index: 0, src: './assets/images/covers/1.png', title: 'The Midnight Library' },
+    { index: 1, src: './assets/images/covers/2.png', title: 'Project Hail Mary' },
+    { index: 2, src: './assets/images/covers/3.png', title: 'Dune' },
+    { index: 3, src: './assets/images/covers/4.png', title: 'The Hobbit' },
+    { index: 4, src: './assets/images/covers/5.png', title: '1984' },
+    { index: 5, src: './assets/images/covers/6.png', title: 'Pride and Prejudice' },
+    { index: 6, src: './assets/images/covers/7.png', title: 'To Kill a Mockingbird' },
+    { index: 7, src: './assets/images/covers/8.png', title: 'The Great Gatsby' },
+    { index: 8, src: './assets/images/covers/9.png', title: 'Educated' },
+    { index: 9, src: './assets/images/covers/10.png', title: 'The Seven Husbands of Evelyn Hugo' },
+    { index: 10, src: './assets/images/covers/11.png', title: 'Atomic Habits' },
+    { index: 11, src: './assets/images/covers/12.png', title: 'Sapiens' }
 ];
 
 function updateModalDisplay() {
@@ -72,11 +45,11 @@ function goToNextImage() {
 
 // Attach click handlers to gallery images
 document.addEventListener('DOMContentLoaded', function () {
-    const galleryImgs = document.querySelectorAll('.gallery-img');
+    const galleryImgs = document.querySelectorAll('.gallery-trigger');
 
     galleryImgs.forEach(img => {
         img.addEventListener('click', function () {
-            currentImageIndex = parseInt(this.dataset.imageIndex);
+            currentImageIndex = Number(this.dataset.imageIndex);
             updateModalDisplay();
         });
     });
@@ -153,20 +126,17 @@ function renderBooks(books) {
 // Filter books by status
 function filterBooksByStatus(status) {
     const booksList_el = document.getElementById('booksList');
+    if (!booksList_el) return;
 
+    booksList_el.classList.add('filtering');
+    window.setTimeout(() => {
+        const filteredBooks = status === 'all'
+            ? booksList
+            : booksList.filter(book => book.status === status);
 
-    // Wait for fade out animation to complete, then render new books
-    setTimeout(() => {
-        let filteredBooks = booksList;
-
-        if (status !== 'all') {
-            filteredBooks = booksList.filter(book => book.status === status);
-        }
-
-        booksList_el.classList.remove('filtering');
         renderBooks(filteredBooks);
-
-    });
+        booksList_el.classList.remove('filtering');
+    }, 120);
 }
 
 // Initialize books page functionality
@@ -202,48 +172,3 @@ document.addEventListener('DOMContentLoaded', function () {
 window.filterBooksByStatus = filterBooksByStatus;
 window.renderBooks = renderBooks;
 
-// Home page featured book carousel
-document.addEventListener('DOMContentLoaded', function () {
-    const carouselImage = document.getElementById('carouselImage');
-    if (!carouselImage) return;
-
-    const carouselBooks = [
-        { src: './assets/images/covers/1.png', title: 'The Midnight Library', description: 'Discover your next great read.' },
-        { src: './assets/images/covers/2.png', title: 'Project Hail Mary', description: 'Explore a new story today.' },
-        { src: './assets/images/covers/3.png', title: 'Dune', description: 'Find a book to lose yourself in.' }
-    ];
-    const carouselTitle = document.getElementById('carouselTitle');
-    const carouselDescription = document.getElementById('carouselDescription');
-    const indicators = document.querySelectorAll('.carousel-indicator');
-    let carouselIndex = 0;
-
-    function showCarouselBook(index) {
-        carouselIndex = (index + carouselBooks.length) % carouselBooks.length;
-        const book = carouselBooks[carouselIndex];
-
-        carouselImage.src = book.src;
-        carouselImage.alt = book.title;
-        carouselTitle.textContent = book.title;
-        carouselDescription.textContent = book.description;
-
-        indicators.forEach((indicator, indicatorIndex) => {
-            const isActive = indicatorIndex === carouselIndex;
-            indicator.classList.toggle('active', isActive);
-            indicator.setAttribute('aria-current', isActive ? 'true' : 'false');
-        });
-    }
-
-    document.querySelector('.carousel-control-prev').addEventListener('click', function () {
-        showCarouselBook(carouselIndex - 1);
-    });
-    document.querySelector('.carousel-control-next').addEventListener('click', function () {
-        showCarouselBook(carouselIndex + 1);
-    });
-    indicators.forEach((indicator, indicatorIndex) => {
-        indicator.addEventListener('click', function () {
-            showCarouselBook(indicatorIndex);
-        });
-    });
-
-    setInterval(() => showCarouselBook(carouselIndex + 1), 5000);
-});
