@@ -1,31 +1,34 @@
 <?php
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
-include __DIR__ . "/assets/includes/databse_connectivity.inc";
+include __DIR__ . "/assets/includes/database_connectivity.inc";
 
-$booksQueryError = false;
-$booksResult = false;
-$booksStatement = mysqli_prepare($conn, "SELECT * FROM books");
+$books = [];
+$booksQueryFailed = false;
+$stmt = mysqli_prepare($conn, "SELECT title, author, publication, availability FROM books");
 
-if ($booksStatement === false) {
-    error_log("Unable to prepare the books query: " . mysqli_error($conn));
-    $booksQueryError = true;
-} elseif (!mysqli_stmt_execute($booksStatement)) {
-    error_log("Unable to execute the books query: " . mysqli_stmt_error($booksStatement));
-    $booksQueryError = true;
+if ($stmt === false) {
+    error_log("Unable to prepare books query: " . mysqli_error($conn));
+    $booksQueryFailed = true;
+} elseif (!mysqli_stmt_execute($stmt)) {
+    error_log("Unable to retrieve books: " . mysqli_stmt_error($stmt));
+    $booksQueryFailed = true;
+    mysqli_stmt_close($stmt);
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $publication, $availability)) {
+    error_log("Unable to read books query results: " . mysqli_stmt_error($stmt));
+    $booksQueryFailed = true;
+    mysqli_stmt_close($stmt);
 } else {
-    $booksResult = mysqli_stmt_get_result($booksStatement);
-    if ($booksResult === false) {
-        error_log("Unable to retrieve books query results: " . mysqli_stmt_error($booksStatement));
-        $booksQueryError = true;
+    while (mysqli_stmt_fetch($stmt)) {
+        $books[] = [
+            "title" => $title,
+            "author" => $author,
+            "year" => $publication,
+            "status" => strtolower(trim($availability))
+        ];
     }
+    mysqli_stmt_close($stmt);
 }
-
-if ($booksStatement !== false) {
-    mysqli_stmt_close($booksStatement);
-}
-
-$hasBooks = $booksResult !== false && mysqli_num_rows($booksResult) > 0;
 ?>
 
 <main class="container content">
@@ -44,7 +47,7 @@ $hasBooks = $booksResult !== false && mysqli_num_rows($booksResult) > 0;
                     <li><a class="dropdown-item active" href="#" data-status="all">All Books</a></li>
                     <li><a class="dropdown-item" href="#" data-status="available">Available</a></li>
                     <li><a class="dropdown-item" href="#" data-status="sold">Sold</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="reserved">Reserved</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="unavailable">Unavailable</a></li>
                 </ul>
             </div>
         </div>
@@ -53,43 +56,26 @@ $hasBooks = $booksResult !== false && mysqli_num_rows($booksResult) > 0;
     <!-- Books Display Section -->
     <div class="books-card">
         <ul class="books-list" id="booksList">
-            <?php if ($hasBooks): ?>
-                <?php while ($book = mysqli_fetch_assoc($booksResult)): ?>
-                    <?php
-                    $title = (string) ($book["title"] ?? "");
-                    $author = (string) ($book["author"] ?? "");
-                    $year = (string) ($book["publication_year"] ?? $book["year"] ?? "");
-                    $status = trim((string) ($book["availability"] ?? $book["status"] ?? "Unknown"));
-                    $statusKey = preg_replace('/[^a-z0-9-]/', '', strtolower($status));
-                    if ($statusKey === "") {
-                        $statusKey = "unknown";
-                    }
-                    ?>
-                    <li class="book-item" data-status="<?php echo htmlspecialchars($statusKey, ENT_QUOTES, "UTF-8"); ?>">
+            <?php if ($booksQueryFailed): ?>
+                <li class="book-item empty-state">
+                    <p>Books could not be loaded. Please try again later.</p>
+                </li>
+            <?php else: ?>
+                <?php foreach ($books as $book): ?>
+                    <?php $status = htmlspecialchars($book["status"], ENT_QUOTES, "UTF-8"); ?>
+                    <li class="book-item" data-status="<?php echo $status; ?>">
                         <div class="book-info">
-                            <span class="book-title"><?php echo htmlspecialchars($title, ENT_QUOTES, "UTF-8"); ?></span>
-                            <span class="book-author"><?php echo htmlspecialchars($author, ENT_QUOTES, "UTF-8"); ?></span>
+                            <span class="book-title"><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></span>
+                            <span class="book-author"><?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></span>
                         </div>
-                        <span class="book-year"><?php echo htmlspecialchars($year, ENT_QUOTES, "UTF-8"); ?></span>
-                        <span class="book-status status-<?php echo htmlspecialchars($statusKey, ENT_QUOTES, "UTF-8"); ?>">
-                            <?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>
-                        </span>
+                        <span class="book-year"><?php echo htmlspecialchars($book["year"], ENT_QUOTES, "UTF-8"); ?></span>
+                        <span class="book-status status-<?php echo $status; ?>"><?php echo htmlspecialchars(ucfirst($book["status"]), ENT_QUOTES, "UTF-8"); ?></span>
                     </li>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
+                <li class="book-item empty-state<?php echo $books ? " d-none" : ""; ?>" id="booksEmptyState">
+                    <p>No books found for this status.</p>
+                </li>
             <?php endif; ?>
-            <li class="book-item empty-state<?php echo $hasBooks ? " d-none" : ""; ?>" id="booksEmptyState">
-                <p><?php
-                    if ($booksQueryError) {
-                        echo "Books could not be loaded right now.";
-                    } else {
-                        echo "No books found for this status.";
-                    }
-                ?></p>
-            </li>
         </ul>
     </div>
 </main>
-
-<?php
-include __DIR__ . "/assets/includes/footer.inc";
-?>

@@ -847,7 +847,8 @@ Features: Filtering books by status
     color: var(--status-reserved-text);
 }
 
-.book-status.status-reserved {
+.book-status.status-reserved,
+.book-status.status-unavailable {
     background: var(--status-borrowed-bg);
     color: var(--status-borrowed-text);
 }

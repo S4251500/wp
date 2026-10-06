@@ -1,4 +1,4 @@
-// Keep these helpers available for the add-book form when it is connected later.
+// Keep these helpers available to the add-book form.
 window.validateFileExtension = validateFileExtension;
 window.showFileValidationMessage = showFileValidationMessage;
 
@@ -45,6 +45,18 @@ function goToNextImage() {
 
 // Attach click handlers to gallery images
 document.addEventListener('DOMContentLoaded', function () {
+    const addBookForm = document.getElementById('addBookForm');
+    if (addBookForm) {
+        const coverInput = document.getElementById('cover');
+        const validationMessage = document.getElementById('coverValidationMessage');
+
+        addBookForm.addEventListener('submit', function (event) {
+            if (!showFileValidationMessage(coverInput, ['jpg', 'jpeg', 'png'], validationMessage)) {
+                event.preventDefault();
+            }
+        });
+    }
+
     const galleryImgs = document.querySelectorAll('.gallery-trigger');
 
     galleryImgs.forEach(img => {
