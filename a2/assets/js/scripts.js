@@ -4,41 +4,30 @@ window.showFileValidationMessage = showFileValidationMessage;
 
 // Gallery Image Cycling
 let currentImageIndex = 0;
-const galleryImages = [
-    { index: 0, src: './assets/images/covers/1.png', title: 'The Midnight Library' },
-    { index: 1, src: './assets/images/covers/2.png', title: 'Project Hail Mary' },
-    { index: 2, src: './assets/images/covers/3.png', title: 'Dune' },
-    { index: 3, src: './assets/images/covers/4.png', title: 'The Hobbit' },
-    { index: 4, src: './assets/images/covers/5.png', title: '1984' },
-    { index: 5, src: './assets/images/covers/6.png', title: 'Pride and Prejudice' },
-    { index: 6, src: './assets/images/covers/7.png', title: 'To Kill a Mockingbird' },
-    { index: 7, src: './assets/images/covers/8.png', title: 'The Great Gatsby' },
-    { index: 8, src: './assets/images/covers/9.png', title: 'Educated' },
-    { index: 9, src: './assets/images/covers/10.png', title: 'The Seven Husbands of Evelyn Hugo' },
-    { index: 10, src: './assets/images/covers/11.png', title: 'Atomic Habits' },
-    { index: 11, src: './assets/images/covers/12.png', title: 'Sapiens' }
-];
+let galleryImages = [];
 
 function updateModalDisplay() {
     const image = galleryImages[currentImageIndex];
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('galleryModalLabel');
 
-    if (modalImage) {
+    if (image && modalImage) {
         modalImage.src = image.src;
         modalImage.alt = image.title;
     }
-    if (modalTitle) {
+    if (image && modalTitle) {
         modalTitle.textContent = image.title;
     }
 }
 
 function goToPreviousImage() {
+    if (galleryImages.length === 0) return;
     currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
     updateModalDisplay();
 }
 
 function goToNextImage() {
+    if (galleryImages.length === 0) return;
     currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
     updateModalDisplay();
 }
@@ -58,6 +47,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const galleryImgs = document.querySelectorAll('.gallery-trigger');
+    galleryImages = Array.from(galleryImgs, img => ({
+        src: img.dataset.imageSrc,
+        title: img.dataset.imageTitle
+    }));
 
     galleryImgs.forEach(img => {
         img.addEventListener('click', function () {

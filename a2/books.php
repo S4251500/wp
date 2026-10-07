@@ -5,7 +5,7 @@ include __DIR__ . "/assets/includes/database_connectivity.inc";
 
 $books = [];
 $booksQueryFailed = false;
-$stmt = mysqli_prepare($conn, "SELECT title, author, publication, availability FROM books");
+$stmt = mysqli_prepare($conn, "SELECT title, author, publication, availability, isbn FROM books");
 
 if ($stmt === false) {
     error_log("Unable to prepare books query: " . mysqli_error($conn));
@@ -14,7 +14,7 @@ if ($stmt === false) {
     error_log("Unable to retrieve books: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
-} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $publication, $availability)) {
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $publication, $availability, $isbn)) {
     error_log("Unable to read books query results: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
@@ -24,7 +24,8 @@ if ($stmt === false) {
             "title" => $title,
             "author" => $author,
             "year" => $publication,
-            "status" => strtolower(trim($availability))
+            "status" => strtolower(trim($availability)),
+            "isbn" => $isbn
         ];
     }
     mysqli_stmt_close($stmt);
@@ -65,7 +66,15 @@ if ($stmt === false) {
                     <?php $status = htmlspecialchars($book["status"], ENT_QUOTES, "UTF-8"); ?>
                     <li class="book-item" data-status="<?php echo $status; ?>">
                         <div class="book-info">
-                            <span class="book-title"><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></span>
+                            <?php if ($book["isbn"] !== ""): ?>
+                                <a class="book-title"
+                                    href="details.php?isbn=<?php echo rawurlencode($book["isbn"]); ?>"
+                                    aria-label="View details for <?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?>">
+                                    <?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?>
+                                </a>
+                            <?php else: ?>
+                                <span class="book-title"><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></span>
+                            <?php endif; ?>
                             <span class="book-author"><?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></span>
                         </div>
                         <span class="book-year"><?php echo htmlspecialchars($book["year"], ENT_QUOTES, "UTF-8"); ?></span>

@@ -1,4 +1,54 @@
 <?php
+$pageTitle = "Home - BookVerse";
+include __DIR__ . "/assets/includes/database_connectivity.inc";
+
+$featuredBooks = [];
+$featuredBooksQueryFailed = false;
+$stmt = mysqli_prepare(
+    $conn,
+    "SELECT title, author, genre, price, availability, isbn, coverID
+    FROM books
+    ORDER BY id DESC
+    LIMIT 4"
+);
+
+if ($stmt === false) {
+    error_log("Unable to prepare featured books query: " . mysqli_error($conn));
+    $featuredBooksQueryFailed = true;
+} elseif (!mysqli_stmt_execute($stmt)) {
+    error_log("Unable to retrieve featured books: " . mysqli_stmt_error($stmt));
+    $featuredBooksQueryFailed = true;
+    mysqli_stmt_close($stmt);
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $genre, $price, $availability, $isbn, $coverID)) {
+    error_log("Unable to read featured books query results: " . mysqli_stmt_error($stmt));
+    $featuredBooksQueryFailed = true;
+    mysqli_stmt_close($stmt);
+} else {
+    while (mysqli_stmt_fetch($stmt)) {
+        $coverImage = null;
+        if (is_string($coverID) && preg_match('/\A[a-f0-9]{1,13}\z/i', $coverID)) {
+            foreach (["jpg", "png"] as $extension) {
+                $coverPath = __DIR__ . "/assets/images/covers/" . $coverID . "." . $extension;
+                if (is_file($coverPath)) {
+                    $coverImage = "./assets/images/covers/" . rawurlencode($coverID) . "." . $extension;
+                    break;
+                }
+            }
+        }
+
+        $featuredBooks[] = [
+            "title" => $title,
+            "author" => $author,
+            "genre" => $genre,
+            "price" => $price,
+            "availability" => strtolower(trim($availability)),
+            "isbn" => $isbn,
+            "image" => $coverImage
+        ];
+    }
+    mysqli_stmt_close($stmt);
+}
+
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
 ?>
@@ -49,62 +99,47 @@ include __DIR__ . "/assets/includes/nav.inc";
         <h1 id="featured-books-title"><img src="./assets/images/favourite.svg" alt="" aria-hidden="true"> Featured
             Books</h1>
         <div class="featured-books-grid">
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/1.png" alt="The Midnight Library cover">
-                <h3>The Midnight Library</h3>
-                <p>Fiction &middot; Matt Haig</p>
-                <strong>$24.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/2.png" alt="Project Hail Mary cover">
-                <h3>Project Hail Mary</h3>
-                <p>Science Fiction &middot; Andy Weir</p>
-                <strong>$28.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/3.png" alt="Dune cover">
-                <h3>Dune</h3>
-                <p>Science Fiction &middot; Frank Herbert</p>
-                <strong>$22.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/4.png" alt="The Hobbit cover">
-                <h3>The Hobbit</h3>
-                <p>Fantasy &middot; J.R.R. Tolkien</p>
-                <strong>$18.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/5.png" alt="1984 cover">
-                <h3>1984</h3>
-                <p>Dystopian &middot; George Orwell</p>
-                <strong>$16.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/6.png" alt="Pride and Prejudice cover">
-                <h3>Pride and Prejudice</h3>
-                <p>Romance &middot; Jane Austen</p>
-                <strong>$14.99</strong>
-                <span class="book-badge reserved">Reserved</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/7.png" alt="To Kill a Mockingbird cover">
-                <h3>To Kill a Mockingbird</h3>
-                <p>Fiction &middot; Harper Lee</p>
-                <strong>$19.99</strong>
-                <span class="book-badge available">Available</span>
-            </article>
-            <article class="featured-book-card">
-                <img src="./assets/images/covers/8.png" alt="The Great Gatsby cover">
-                <h3>The Great Gatsby</h3>
-                <p>Fiction &middot; F. Scott Fitzgerald</p>
-                <strong>$15.99</strong>
-                <span class="book-badge sold">Sold</span>
-            </article>
+            <?php if ($featuredBooksQueryFailed): ?>
+                <p class="featured-books-message" role="alert">Featured books could not be loaded. Please try again later.</p>
+            <?php elseif (!$featuredBooks): ?>
+                <p class="featured-books-message">No books have been added yet.</p>
+            <?php else: ?>
+                <?php foreach ($featuredBooks as $book): ?>
+                    <?php
+                    $status = in_array($book["availability"], ["available", "unavailable", "sold"], true)
+                        ? $book["availability"]
+                        : "unavailable";
+                    $image = $book["image"] ?? "./assets/images/allBooks.svg";
+                    ?>
+                    <article class="featured-book-card">
+                        <img class="<?php echo $book["image"] === null ? "featured-book-placeholder" : ""; ?>"
+                            src="<?php echo htmlspecialchars($image, ENT_QUOTES, "UTF-8"); ?>"
+                            alt="<?php echo htmlspecialchars(
+                                $book["image"] === null ? "No cover image available for " . $book["title"] : $book["title"] . " cover",
+                                ENT_QUOTES,
+                                "UTF-8"
+                            ); ?>">
+                        <div class="featured-book-info">
+                            <h3><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></h3>
+                            <p><?php echo htmlspecialchars($book["genre"], ENT_QUOTES, "UTF-8"); ?> &middot;
+                                <?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></p>
+                            <strong>$<?php echo htmlspecialchars(number_format((float)$book["price"], 2), ENT_QUOTES, "UTF-8"); ?></strong>
+                            <?php if ($book["isbn"] !== ""): ?>
+                                <a class="featured-book-details"
+                                    href="details.php?isbn=<?php echo rawurlencode($book["isbn"]); ?>">
+                                    <span aria-hidden="true">&#9673;</span> View Details
+                                </a>
+                            <?php else: ?>
+                                <span class="book-badge <?php
+                                    echo $status === "available" ? "available" : ($status === "sold" ? "sold" : "reserved");
+                                ?>">
+                                    <?php echo htmlspecialchars(ucfirst($status), ENT_QUOTES, "UTF-8"); ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </section>
 </main>

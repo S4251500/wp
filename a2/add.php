@@ -87,17 +87,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             error_log("Book cover directory is missing or not writable: " . $coverDirectory);
             $errors[] = "The cover image could not be saved. Please try again later.";
         } else {
-            $coverFilename = uniqid() . "." . $coverExtension;
-            $coverPath = $coverDirectory . "/" . $coverFilename;
+            try {
+                $coverID = bin2hex(random_bytes(6));
+            } catch (Exception $exception) {
+                error_log("Unable to generate a unique book cover ID: " . $exception->getMessage());
+                $errors[] = "The cover image could not be saved. Please try again later.";
+            }
 
-            if (!move_uploaded_file($_FILES["cover"]["tmp_name"], $coverPath)) {
+            if (!$errors) {
+                $coverFilename = $coverID . "." . $coverExtension;
+                $coverPath = $coverDirectory . "/" . $coverFilename;
+            }
+
+            if (!$errors && !move_uploaded_file($_FILES["cover"]["tmp_name"], $coverPath)) {
                 error_log("Unable to save uploaded book cover to: " . $coverPath);
                 $errors[] = "The cover image could not be saved. Please try again.";
-            } else {
+            } elseif (!$errors) {
                 $stmt = mysqli_prepare(
                     $conn,
-                    "INSERT INTO books (title, author, genre, publication, price, isbn, `condition`, description, availability)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO books (title, author, genre, publication, price, isbn, `condition`, description, availability, coverID)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 );
 
                 if ($stmt === false) {
@@ -110,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (
                         !mysqli_stmt_bind_param(
                             $stmt,
-                            "sssidssss",
+                            "sssidsssss",
                             $formData["title"],
                             $formData["author"],
                             $formData["genre"],
@@ -119,7 +128,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             $formData["isbn"],
                             $formData["condition"],
                             $formData["description"],
-                            $formData["availability"]
+                            $formData["availability"],
+                            $coverID
                         ) || !mysqli_stmt_execute($stmt)
                     ) {
                         error_log("Unable to add book: " . mysqli_stmt_error($stmt));

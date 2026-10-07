@@ -1,4 +1,43 @@
 <?php
+include __DIR__ . "/assets/includes/database_connectivity.inc";
+
+$pageTitle = "Gallery - BookVerse";
+$books = [];
+$booksQueryFailed = false;
+$stmt = mysqli_prepare($conn, "SELECT title, coverID FROM books ORDER BY id DESC LIMIT 12");
+
+if ($stmt === false) {
+    error_log("Unable to prepare gallery query: " . mysqli_error($conn));
+    $booksQueryFailed = true;
+} elseif (!mysqli_stmt_execute($stmt)) {
+    error_log("Unable to retrieve gallery books: " . mysqli_stmt_error($stmt));
+    $booksQueryFailed = true;
+    mysqli_stmt_close($stmt);
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $coverID)) {
+    error_log("Unable to read gallery query results: " . mysqli_stmt_error($stmt));
+    $booksQueryFailed = true;
+    mysqli_stmt_close($stmt);
+} else {
+    while (mysqli_stmt_fetch($stmt)) {
+        $coverImage = null;
+        if (is_string($coverID) && preg_match('/\A[a-f0-9]{1,13}\z/i', $coverID)) {
+            foreach (["jpg", "png"] as $extension) {
+                $coverPath = __DIR__ . "/assets/images/covers/" . $coverID . "." . $extension;
+                if (is_file($coverPath)) {
+                    $coverImage = "./assets/images/covers/" . rawurlencode($coverID) . "." . $extension;
+                    break;
+                }
+            }
+        }
+
+        $books[] = [
+            "title" => $title,
+            "image" => $coverImage
+        ];
+    }
+    mysqli_stmt_close($stmt);
+}
+
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
 ?>
@@ -6,45 +45,35 @@ include __DIR__ . "/assets/includes/nav.inc";
 <main class="container content">
     <h1><img src="./assets/images/gallerySearch.svg" alt="" aria-hidden="true"> Book Cover Gallery</h1>
     <section class="gallery-grid" aria-label="Book cover gallery">
-        <button class="gallery-trigger" type="button" aria-label="View The Midnight Library cover"
-            data-image-index="0" data-bs-toggle="modal" data-bs-target="#galleryModal"><img
-                src="./assets/images/covers/1.png" alt="The Midnight Library cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Project Hail Mary cover" data-image-index="1"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/2.png"
-                alt="Project Hail Mary cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Dune cover" data-image-index="2"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/3.png"
-                alt="Dune cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View The Hobbit cover" data-image-index="3"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/4.png"
-                alt="The Hobbit cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View 1984 cover" data-image-index="4"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/5.png"
-                alt="1984 cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Pride and Prejudice cover"
-            data-image-index="5" data-bs-toggle="modal" data-bs-target="#galleryModal"><img
-                src="./assets/images/covers/6.png" alt="Pride and Prejudice cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View To Kill a Mockingbird cover"
-            data-image-index="6" data-bs-toggle="modal" data-bs-target="#galleryModal"><img
-                src="./assets/images/covers/7.png" alt="To Kill a Mockingbird cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View The Great Gatsby cover" data-image-index="7"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/8.png"
-                alt="The Great Gatsby cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Educated cover" data-image-index="8"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/9.png"
-                alt="Educated cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View The Seven Husbands of Evelyn Hugo cover"
-            data-image-index="9" data-bs-toggle="modal" data-bs-target="#galleryModal"><img
-                src="./assets/images/covers/10.png" alt="The Seven Husbands of Evelyn Hugo cover"
-                class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Atomic Habits cover" data-image-index="10"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/11.png"
-                alt="Atomic Habits cover" class="gallery-img"></button>
-        <button class="gallery-trigger" type="button" aria-label="View Sapiens cover" data-image-index="11"
-            data-bs-toggle="modal" data-bs-target="#galleryModal"><img src="./assets/images/covers/12.png"
-                alt="Sapiens cover" class="gallery-img"></button>
+        <?php if ($booksQueryFailed): ?>
+            <p class="gallery-empty-state" role="alert">Book covers could not be loaded. Please try again later.</p>
+        <?php elseif (!$books): ?>
+            <div class="gallery-empty-state">
+                <img src="./assets/images/allBooks.svg" alt="" aria-hidden="true">
+                <span>No book images available</span>
+            </div>
+        <?php else: ?>
+            <?php foreach ($books as $index => $book): ?>
+                <?php
+                $safeTitle = htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8");
+                $imagePath = $book["image"] ?? "./assets/images/allBooks.svg";
+                $imageAlt = $book["image"] === null
+                    ? "No cover image available for " . $book["title"]
+                    : $book["title"] . " cover";
+                ?>
+                <button class="gallery-trigger" type="button"
+                    aria-label="View <?php echo $safeTitle; ?> cover"
+                    data-image-index="<?php echo $index; ?>"
+                    data-image-src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, "UTF-8"); ?>"
+                    data-image-title="<?php echo $safeTitle; ?>"
+                    data-bs-toggle="modal" data-bs-target="#galleryModal">
+                    <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, "UTF-8"); ?>"
+                        alt="<?php echo htmlspecialchars($imageAlt, ENT_QUOTES, "UTF-8"); ?>"
+                        class="gallery-img<?php echo $book["image"] === null ? " gallery-img-placeholder" : ""; ?>">
+                </button>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </section>
-
 </main>
 
 <div class="modal fade gallery-modal" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel"
