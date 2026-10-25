@@ -115,10 +115,10 @@ include __DIR__ . "/assets/includes/nav.inc";
                         <img class="<?php echo $book["image"] === null ? "featured-book-placeholder" : ""; ?>"
                             src="<?php echo htmlspecialchars($image, ENT_QUOTES, "UTF-8"); ?>"
                             alt="<?php echo htmlspecialchars(
-                                $book["image"] === null ? "No cover image available for " . $book["title"] : $book["title"] . " cover",
-                                ENT_QUOTES,
-                                "UTF-8"
-                            ); ?>">
+                                        $book["image"] === null ? "No cover image available for " . $book["title"] : $book["title"] . " cover",
+                                        ENT_QUOTES,
+                                        "UTF-8"
+                                    ); ?>">
                         <div class="featured-book-info">
                             <h3><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></h3>
                             <p><?php echo htmlspecialchars($book["genre"], ENT_QUOTES, "UTF-8"); ?> &middot;
@@ -131,8 +131,8 @@ include __DIR__ . "/assets/includes/nav.inc";
                                 </a>
                             <?php else: ?>
                                 <span class="book-badge <?php
-                                    echo $status === "available" ? "available" : ($status === "sold" ? "sold" : "reserved");
-                                ?>">
+                                                        echo $status === "available" ? "available" : ($status === "sold" ? "sold" : "reserved");
+                                                        ?>">
                                     <?php echo htmlspecialchars(ucfirst($status), ENT_QUOTES, "UTF-8"); ?>
                                 </span>
                             <?php endif; ?>

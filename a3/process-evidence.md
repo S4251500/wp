@@ -127,6 +127,37 @@ How did you test correctness?
 
 ---
 
+## AI Task 3
+
+**Date:**
+25/10/2026
+
+**Task Description:**
+Add login and registration page layouts and account links to the shared navigation.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Add `login.php` and `register.php` to match the supplied screenshots, reuse existing CSS where possible, and add login and register icons to the shared navigation.
+
+**AI Output Summary:**
+Created both page layouts with labelled form fields, added account links with inline SVG icons to the shared navigation, and added matching responsive styles.
+
+**What You Accepted:**
+The two page layouts, shared navigation links, inline icons, and responsive styling.
+
+**What You Changed:**
+Kept the forms presentation-only because the project does not yet contain account authentication processing or a documented user-table schema.
+
+**Validation Performed:**
+Checked both pages with PHP syntax validation and loaded them through the local web server to confirm the shared navigation, page content, and footer render.
+
+**Issues Identified:**
+Form submissions are not connected to registration or login processing.
+
+---
+
 # 📌 Final Reflection (End of Assessment)
 
 **What AI was most useful for:**  

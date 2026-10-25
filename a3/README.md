@@ -94,8 +94,8 @@ Complete the table below by describing the purpose of each page.
 | `details.php` | TODO |
 | `seller.php` | TODO |
 | `search.php` | TODO |
-| `register.php` | TODO |
-| `login.php` | TODO |
+| `register.php` | Displays the account registration form. |
+| `login.php` | Displays the account login form. |
 | `logout.php` | TODO |
 | `add.php` | TODO |
 | `edit.php` | TODO |

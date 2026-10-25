@@ -36,7 +36,7 @@ Commit 1
 **Symptom:**  
 Clicking the BookVerse logo in the navigation caused an error because the link pointed to a page that did not exist in the project.
 
-**Steps to Reproduce:**  
+**Steps to Reproduce:**
 1. Open any page in the `a2` project.
 2. Click the BookVerse logo in the navigation bar.
 3. Observe that the link attempts to open `index.html` and produces an error because that file is not present.
@@ -54,23 +54,51 @@ Opened the navigation on the PHP pages and clicked the BookVerse logo. It now na
 
 ## Bug 2
 
-**Date Identified:**  
+**Date Identified:** 07/10/2026
 
-**Date Fixed:**  
+**Date Fixed:** 07/10/2026
 
-**File:**  
+**File:** `add.php`, `details.php`
 
-**Related Commit:**  
+**Related Commit:** [1d00ba5](https://github.com/S4251500/wp/commit/1d00ba5d4d922404a7374a841f4c3b8b431e77a1)
 
-**Symptom:**  
+**Symptom:** An uploaded cover image was saved on the server, but the details page could not show the cover belonging to that book.
+
+**Steps to Reproduce:**
+1. Add a book with a valid JPG or PNG cover image.
+2. Open that book's details page.
+3. Observe that the cover is missing or the page shows the cover-unavailable placeholder.
+
+**Root Cause:** The uploaded filename was generated independently, but its unique ID was not stored in the corresponding `books` row. The details query therefore had no reliable way to find the image for that book.
+
+**Fix:** Generated a 12-character random hexadecimal `coverID`, used it as the uploaded image's filename, stored it in the book's `coverID` database column, and updated `details.php` to load the matching JPG or PNG file.
+
+**Verification:** Added a test book with a PNG cover, confirmed its 12-character ID was saved in the database, and opened the details page to verify that it displayed that exact image. Removed the temporary book record and image after testing.
+
+---
+
+## Bug 3
+
+**Date Identified:** 07/10/2026
+
+**Date Fixed:** 07/10/2026
+
+**File:** `gallery.php`, `assets/js/scripts.js`
+
+**Related Commit:** [1d00ba5](https://github.com/S4251500/wp/commit/1d00ba5d4d922404a7374a841f4c3b8b431e77a1)
+
+**Symptom:** The gallery always showed a fixed set of sample covers. Newly added book covers did not appear, and the modal navigation did not reflect database entries.
 
 **Steps to Reproduce:**  
+1. Add a book with a valid cover image.
+2. Open the gallery page.
+3. Observe that the new cover is absent from the gallery and the previous/next modal controls still cycle through the fixed sample list.
 
-**Root Cause:**  
+**Root Cause:** The gallery thumbnails and JavaScript modal image list were hard-coded to the original sample images instead of being generated from the latest book records and their `coverID` values.
 
-**Fix:**  
+**Fix:** Updated `gallery.php` to retrieve the 12 latest book rows and resolve each cover by its stored ID. Updated `assets/js/scripts.js` to build the modal navigation list from those gallery items. Missing or unavailable covers use the no-image icon.
 
-**Verification:**  
+**Verification:** Opened the local gallery and confirmed records appeared newest first, a record without a cover displayed the placeholder icon, and the modal showed the selected record's title and cover. Tested the Next control and confirmed it advanced to the next database entry.
 
 ---
 
@@ -119,7 +147,7 @@ Align the books-page status filter with the availability values in the local dat
 GitHub Copilot in VS Code
 
 **Prompt / Input:**  
-“align them”
+Align the books-page status filter with the database's availability entries, they are Available, Unavailable, and Sold.
 
 **AI Output Summary:**  
 Updated the status filter to use the database's `unavailable` value and label, so the JavaScript filter matches the rendered records. Kept the existing status-badge appearance for unavailable books.
@@ -177,7 +205,7 @@ At this stage, the successful database insert and image write still needed to be
 
 **Tool Used:** GitHub Copilot in VS Code
 
-**Prompt / Input:** “make a details.php that looks like this image, try and use the colours already being used in the project use a query string to display information from the database”
+**Prompt / Input:** “make a details.php file contains the book's details, ensure to maintain the theme of website branding. 
 
 **AI Output Summary:** Added a `details.php` page that retrieves a book using a prepared MySQLi query keyed by ISBN, styled the details layout with the existing project colours, and linked book titles on `books.php` to their details.
 
@@ -217,28 +245,6 @@ At this stage, the successful database insert and image write still needed to be
 
 **Date:** 07/10/2026
 
-**Task Description:** Ensure browsers fetch the latest details page styling instead of showing a cached, old layout.
-
-**Tool Used:** GitHub Copilot in VS Code
-
-**Prompt / Input:** “its still showing this in my search engine” (with a screenshot showing the old stacked details layout and a tiny cover image)
-
-**AI Output Summary:** Updated the shared header's stylesheet URL with the CSS file modification time, so a changed stylesheet receives a new URL and the browser requests the latest version.
-
-**What You Accepted:** The stylesheet version is generated from `assets/css/style.css`'s file modification time and applies to all pages using the shared header.
-
-**What You Changed:** The screenshot's stacked layout and tiny image indicated stale or different page assets. This cache-busting change addresses browser caching when the updated header and stylesheet are deployed; the server still needs the current `details.php` and `style.css` files uploaded.
-
-**Validation Performed:** TODO: Confirm the stylesheet URL includes its modification time and test the deployed details page after uploading the updated files.
-
-**Issues Identified:** Changes made locally do not automatically update the deployed website. Ensure `details.php`, `assets/includes/header.inc`, and `assets/css/style.css` are uploaded to the same deployed project folder.
-
----
-
-## AI Task 7
-
-**Date:** 07/10/2026
-
 **Task Description:** Display the 12 newest book cover entries in the database in the existing gallery, using a no-image icon when a cover is unavailable.
 
 **Tool Used:** GitHub Copilot in VS Code
@@ -257,7 +263,7 @@ At this stage, the successful database insert and image write still needed to be
 
 ---
 
-## AI Task 8
+## AI Task 7
 
 **Date:** 07/10/2026
 
