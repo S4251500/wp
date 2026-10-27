@@ -158,6 +158,68 @@ Form submissions are not connected to registration or login processing.
 
 ---
 
+## AI Task 4
+
+**Date:**
+27/10/2026
+
+**Task Description:**
+Create a simple PHP session on login or registration form submission and show a session-aware account dropdown in the shared navigation.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Make login and register submissions create a session without validating or saving the submitted information, and replace the account links with the account name and a logout dropdown while signed in.
+
+**AI Output Summary:**
+Added session handling to both form pages, conditional account navigation, a logout endpoint, and matching account-button styling.
+
+**What You Accepted:**
+The username-based session display and logout flow.
+
+**What You Changed:**
+Removed browser-required and email-format constraints so the forms do not validate the entered fields.
+
+**Validation Performed:**
+PHP syntax checks passed for the changed PHP files, and `git diff --check` reported no whitespace errors.
+
+**Issues Identified:**
+None identified during syntax and whitespace checks.
+
+---
+
+## AI Task 5
+
+**Date:**
+27/10/2026
+
+**Task Description:**
+Style the signed-in account dropdown to match the supplied navigation screenshot.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Make the account dropdown box look like the one in the top-right of the supplied image.
+
+**AI Output Summary:**
+Styled the account button and dropdown with the screenshot's dark colors, accent icon, compact dimensions, and hover states.
+
+**What You Accepted:**
+The account button icon and custom dark dropdown styling.
+
+**What You Changed:**
+Kept the existing logout action rather than adding profile links that do not exist in the project.
+
+**Validation Performed:**
+PHP syntax validation passed for the shared navigation include, and `git diff --check` reported no whitespace errors.
+
+**Issues Identified:**
+None identified during syntax and whitespace checks.
+
+---
+
 # 📌 Final Reflection (End of Assessment)
 
 **What AI was most useful for:**  

@@ -247,7 +247,8 @@ h1 img {
     gap: 0.35rem;
 }
 
-.nav-account-links a {
+.nav-account-links a,
+.nav-account-toggle {
     display: inline-flex;
     align-items: center;
     padding: 0.35rem 0.5rem;
@@ -257,9 +258,50 @@ h1 img {
     text-decoration: none;
 }
 
-.nav-account-links a:hover {
+.nav-account-toggle {
+    background: var(--navy-blue-dark);
+    border: 1px solid var(--navy-blue);
+    color: var(--accent-amber);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.nav-account-links a:hover,
+.nav-account-toggle:hover {
     color: var(--accent-amber);
     background: var(--overlay-white);
+}
+
+.nav-account-toggle:hover {
+    background: var(--navy-blue);
+}
+
+.nav-account-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.35rem;
+    fill: currentColor;
+}
+
+.nav-account-dropdown {
+    min-width: 6rem;
+    padding: 0.25rem 0;
+    background: #0c4549;
+    border: 1px solid var(--border-teal);
+    border-radius: 0.3rem;
+    box-shadow: 0 0.25rem 0.6rem rgba(0, 0, 0, 0.25);
+}
+
+.nav-account-dropdown .dropdown-item {
+    padding: 0.35rem 0.6rem;
+    color: var(--text-on-dark);
+    font-size: 0.8rem;
+}
+
+.nav-account-dropdown .dropdown-item:hover,
+.nav-account-dropdown .dropdown-item:focus {
+    color: var(--accent-amber);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-account-links .nav-link-icon {
@@ -1291,7 +1333,8 @@ input:focus {
     }
 
     .nav-links a,
-    .nav-account-links a {
+    .nav-account-links a,
+    .nav-account-toggle {
         padding: 0.25rem 0.2rem;
         font-size: 0.7rem;
     }

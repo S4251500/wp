@@ -1,4 +1,15 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = $_POST["username"] ?? "";
+    $_SESSION["username"] = is_string($username) ? $username : "";
+    header("Location: index.php");
+    exit;
+}
+
 $pageTitle = "Login - BookVerse";
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
@@ -15,12 +26,12 @@ include __DIR__ . "/assets/includes/nav.inc";
             <div class="auth-field">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username"
-                    autocomplete="username" required>
+                    autocomplete="username">
             </div>
             <div class="auth-field">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password"
-                    autocomplete="current-password" required>
+                    autocomplete="current-password">
             </div>
             <button class="auth-submit" type="submit">
                 <span aria-hidden="true">&#9673;</span> Login

@@ -1,4 +1,15 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = $_POST["username"] ?? "";
+    $_SESSION["username"] = is_string($username) ? $username : "";
+    header("Location: index.php");
+    exit;
+}
+
 $pageTitle = "Register - BookVerse";
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
@@ -15,22 +26,22 @@ include __DIR__ . "/assets/includes/nav.inc";
             <div class="auth-field">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" placeholder="Choose a username"
-                    autocomplete="username" required>
+                    autocomplete="username">
             </div>
             <div class="auth-field">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email"
-                    autocomplete="email" required>
+                <input type="text" id="email" name="email" placeholder="Enter your email"
+                    autocomplete="email">
             </div>
             <div class="auth-field">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter password"
-                    autocomplete="new-password" required>
+                    autocomplete="new-password">
             </div>
             <div class="auth-field">
                 <label for="confirm-password">Confirm Password</label>
                 <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm password"
-                    autocomplete="new-password" required>
+                    autocomplete="new-password">
             </div>
             <button class="auth-submit" type="submit">
                 <span aria-hidden="true">&#9673;</span> Register
