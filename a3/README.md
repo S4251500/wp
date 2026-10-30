@@ -96,7 +96,7 @@ Complete the table below by describing the purpose of each page.
 | `search.php` | TODO |
 | `register.php` | Displays the account registration form. |
 | `login.php` | Displays the account login form. |
-| `logout.php` | TODO |
+| `logout.php` | Ends the active session and returns the visitor to the home page. |
 | `add.php` | TODO |
 | `edit.php` | TODO |
 | Optional processing files | TODO, if used |

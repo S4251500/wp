@@ -118,7 +118,7 @@ function filterBooksByStatus(status) {
 
 // Initialize books page functionality
 document.addEventListener('DOMContentLoaded', function () {
-    const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+    const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item[data-status]');
     const filterDropdownBtn = document.getElementById('filterDropdown');
 
     // Add click handlers to dropdown items

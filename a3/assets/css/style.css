@@ -161,6 +161,10 @@ h1 img {
     color: var(--text-on-dark);
 }
 
+.login-success-alert {
+    margin: 0.35rem 0.5rem;
+}
+
 /* navbar */
 .navbar {
     background: var(--navy-light);

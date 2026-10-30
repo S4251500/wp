@@ -51,7 +51,17 @@ if ($stmt === false) {
 
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
+
+$loginSuccessMessage = $_SESSION["login_success"] ?? null;
+unset($_SESSION["login_success"]);
+
+if (is_string($loginSuccessMessage) && $loginSuccessMessage !== ""):
 ?>
+    <div class="alert alert-success alert-dismissible fade show login-success-alert" role="status">
+        <?php echo htmlspecialchars($loginSuccessMessage, ENT_QUOTES, "UTF-8"); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
 <section id="featuredCarousel" class="hero-carousel carousel slide" data-bs-ride="carousel" data-bs-interval="5000"
     aria-label="Featured book covers">
     <div class="carousel-indicators">

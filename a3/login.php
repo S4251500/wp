@@ -6,6 +6,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"] ?? "";
     $_SESSION["username"] = is_string($username) ? $username : "";
+
+    if ($_SESSION["username"] !== "") {
+        $_SESSION["login_success"] = "Logged in successfully. Welcome back, " . $_SESSION["username"] . "!";
+    }
+
     header("Location: index.php");
     exit;
 }

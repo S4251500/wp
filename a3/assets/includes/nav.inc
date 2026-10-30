@@ -21,7 +21,7 @@
         </nav>
 
         <ul class="nav-account-links" aria-label="Account navigation">
-            <?php if (isset($_SESSION["username"])): ?>
+            <?php if (isset($_SESSION["username"]) && is_string($_SESSION["username"]) && $_SESSION["username"] !== ""): ?>
                 <li class="dropdown">
                     <button class="nav-account-toggle dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
