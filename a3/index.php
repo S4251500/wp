@@ -6,9 +6,9 @@ $featuredBooks = [];
 $featuredBooksQueryFailed = false;
 $stmt = mysqli_prepare(
     $conn,
-    "SELECT title, author, genre, price, availability, isbn, coverID
+    "SELECT title, author, genre, price, status, isbn, image_path
     FROM books
-    ORDER BY id DESC
+    ORDER BY book_id DESC
     LIMIT 4"
 );
 
@@ -19,18 +19,19 @@ if ($stmt === false) {
     error_log("Unable to retrieve featured books: " . mysqli_stmt_error($stmt));
     $featuredBooksQueryFailed = true;
     mysqli_stmt_close($stmt);
-} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $genre, $price, $availability, $isbn, $coverID)) {
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $genre, $price, $status, $isbn, $image_path)) {
     error_log("Unable to read featured books query results: " . mysqli_stmt_error($stmt));
     $featuredBooksQueryFailed = true;
     mysqli_stmt_close($stmt);
 } else {
     while (mysqli_stmt_fetch($stmt)) {
         $coverImage = null;
-        if (is_string($coverID) && preg_match('/\A[a-f0-9]{1,13}\z/i', $coverID)) {
+        $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
+        if ($coverNumber !== false && $coverNumber > 0 && $coverNumber <= 2147483647) {
             foreach (["jpg", "png"] as $extension) {
-                $coverPath = __DIR__ . "/assets/images/covers/" . $coverID . "." . $extension;
+                $coverPath = __DIR__ . "/assets/images/" . $coverNumber . "." . $extension;
                 if (is_file($coverPath)) {
-                    $coverImage = "./assets/images/covers/" . rawurlencode($coverID) . "." . $extension;
+                    $coverImage = "./assets/images/" . $coverNumber . "." . $extension;
                     break;
                 }
             }
@@ -41,9 +42,9 @@ if ($stmt === false) {
             "author" => $author,
             "genre" => $genre,
             "price" => $price,
-            "availability" => strtolower(trim($availability)),
+            "status" => $status,
             "isbn" => $isbn,
-            "image" => $coverImage
+            "image_path" => $coverImage
         ];
     }
     mysqli_stmt_close($stmt);
@@ -116,16 +117,17 @@ if (is_string($loginSuccessMessage) && $loginSuccessMessage !== ""):
             <?php else: ?>
                 <?php foreach ($featuredBooks as $book): ?>
                     <?php
-                    $status = in_array($book["availability"], ["available", "unavailable", "sold"], true)
-                        ? $book["availability"]
-                        : "unavailable";
-                    $image = $book["image"] ?? "./assets/images/allBooks.svg";
+                    $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+                        ? $book["status"]
+                        : "Reserved";
+                    $statusClass = strtolower($status);
+                    $image_path = $book["image_path"] ?? "./assets/images/allBooks.svg";
                     ?>
                     <article class="featured-book-card">
-                        <img class="<?php echo $book["image"] === null ? "featured-book-placeholder" : ""; ?>"
-                            src="<?php echo htmlspecialchars($image, ENT_QUOTES, "UTF-8"); ?>"
+                        <img class="<?php echo $book["image_path"] === null ? "featured-book-placeholder" : ""; ?>"
+                            src="<?php echo htmlspecialchars($image_path, ENT_QUOTES, "UTF-8"); ?>"
                             alt="<?php echo htmlspecialchars(
-                                        $book["image"] === null ? "No cover image available for " . $book["title"] : $book["title"] . " cover",
+                                        $book["image_path"] === null ? "No cover image available for " . $book["title"] : $book["title"] . " cover",
                                         ENT_QUOTES,
                                         "UTF-8"
                                     ); ?>">
@@ -134,16 +136,14 @@ if (is_string($loginSuccessMessage) && $loginSuccessMessage !== ""):
                             <p><?php echo htmlspecialchars($book["genre"], ENT_QUOTES, "UTF-8"); ?> &middot;
                                 <?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></p>
                             <strong>$<?php echo htmlspecialchars(number_format((float)$book["price"], 2), ENT_QUOTES, "UTF-8"); ?></strong>
-                            <?php if ($book["isbn"] !== ""): ?>
+                            <?php if (is_string($book["isbn"]) && $book["isbn"] !== ""): ?>
                                 <a class="featured-book-details"
                                     href="details.php?isbn=<?php echo rawurlencode($book["isbn"]); ?>">
                                     <span aria-hidden="true">&#9673;</span> View Details
                                 </a>
                             <?php else: ?>
-                                <span class="book-badge <?php
-                                                        echo $status === "available" ? "available" : ($status === "sold" ? "sold" : "reserved");
-                                                        ?>">
-                                    <?php echo htmlspecialchars(ucfirst($status), ENT_QUOTES, "UTF-8"); ?>
+                                <span class="book-badge <?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>">
+                                    <?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>
                                 </span>
                             <?php endif; ?>
                         </div>

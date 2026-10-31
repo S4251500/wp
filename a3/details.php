@@ -7,10 +7,10 @@ $queryFailed = false;
 $isbn = $_GET["isbn"] ?? "";
 $isbn = is_string($isbn) ? trim($isbn) : "";
 
-if ($isbn !== "" && strlen($isbn) <= 17) {
+if ($isbn !== "" && strlen($isbn) <= 20) {
     $stmt = mysqli_prepare(
         $conn,
-        "SELECT title, author, genre, publication, price, isbn, `condition`, description, availability, coverID
+        "SELECT title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path
         FROM books
         WHERE isbn = ?
         LIMIT 1"
@@ -32,13 +32,13 @@ if ($isbn !== "" && strlen($isbn) <= 17) {
         $title,
         $author,
         $genre,
-        $publication,
+        $publication_year,
         $price,
-        $bookIsbn,
-        $condition,
+        $isbn,
+        $book_condition,
         $description,
-        $availability,
-        $coverID
+        $status,
+        $image_path
     )) {
         error_log("Unable to read book details query results: " . mysqli_stmt_error($stmt));
         $queryFailed = true;
@@ -49,13 +49,13 @@ if ($isbn !== "" && strlen($isbn) <= 17) {
                 "title" => $title,
                 "author" => $author,
                 "genre" => $genre,
-                "publication" => $publication,
+                "publication_year" => $publication_year === null ? "" : (string)$publication_year,
                 "price" => $price,
-                "isbn" => $bookIsbn,
-                "condition" => $condition,
+                "isbn" => $isbn,
+                "book_condition" => $book_condition,
                 "description" => $description,
-                "availability" => $availability,
-                "coverID" => $coverID
+                "status" => $status,
+                "image_path" => $image_path
             ];
         }
         mysqli_stmt_close($stmt);
@@ -85,16 +85,18 @@ include __DIR__ . "/assets/includes/nav.inc";
         </div>
     <?php else: ?>
         <?php
-        $availabilityText = ucfirst(strtolower(trim($book["availability"])));
-        $availabilityClass = in_array(strtolower(trim($book["availability"])), ["available", "sold", "unavailable"], true)
-            ? strtolower(trim($book["availability"]))
-            : "unavailable";
+        $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+            ? $book["status"]
+            : "Reserved";
+        $statusClass = strtolower($status);
         $coverImage = null;
-        if (is_string($book["coverID"]) && preg_match('/\A[a-f0-9]{1,13}\z/i', $book["coverID"])) {
+        $image_path = $book["image_path"];
+        $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
+        if ($coverNumber !== false && $coverNumber > 0 && $coverNumber <= 2147483647) {
             foreach (["jpg", "png"] as $extension) {
-                $coverPath = __DIR__ . "/assets/images/covers/" . $book["coverID"] . "." . $extension;
+                $coverPath = __DIR__ . "/assets/images/" . $coverNumber . "." . $extension;
                 if (is_file($coverPath)) {
-                    $coverImage = "./assets/images/covers/" . rawurlencode($book["coverID"]) . "." . $extension;
+                    $coverImage = "./assets/images/" . $coverNumber . "." . $extension;
                     break;
                 }
             }
@@ -117,8 +119,8 @@ include __DIR__ . "/assets/includes/nav.inc";
             <div class="details-info">
                 <h1><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></h1>
                 <p class="details-author">by <?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></p>
-                <span class="details-status status-<?php echo htmlspecialchars($availabilityClass, ENT_QUOTES, "UTF-8"); ?>">
-                    <?php echo htmlspecialchars($availabilityText, ENT_QUOTES, "UTF-8"); ?>
+                <span class="details-status status-<?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>">
+                    <?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>
                 </span>
 
                 <dl class="details-list">
@@ -128,7 +130,7 @@ include __DIR__ . "/assets/includes/nav.inc";
                     </div>
                     <div>
                         <dt>Publication Year:</dt>
-                        <dd><?php echo htmlspecialchars($book["publication"], ENT_QUOTES, "UTF-8"); ?></dd>
+                        <dd><?php echo htmlspecialchars($book["publication_year"], ENT_QUOTES, "UTF-8"); ?></dd>
                     </div>
                     <div>
                         <dt>ISBN:</dt>
@@ -136,7 +138,7 @@ include __DIR__ . "/assets/includes/nav.inc";
                     </div>
                     <div>
                         <dt>Condition:</dt>
-                        <dd><?php echo htmlspecialchars(ucfirst($book["condition"]), ENT_QUOTES, "UTF-8"); ?></dd>
+                        <dd><?php echo htmlspecialchars($book["book_condition"], ENT_QUOTES, "UTF-8"); ?></dd>
                     </div>
                     <div>
                         <dt>Price:</dt>

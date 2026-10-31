@@ -1145,6 +1145,7 @@ Features: Filtering books by status
     color: var(--bg-white);
 }
 
+.details-status.status-reserved,
 .details-status.status-unavailable {
     background: var(--status-reserved-bg);
     color: var(--status-reserved-text);

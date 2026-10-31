@@ -5,7 +5,12 @@ include __DIR__ . "/assets/includes/database_connectivity.inc";
 
 $books = [];
 $booksQueryFailed = false;
-$stmt = mysqli_prepare($conn, "SELECT title, author, publication, availability, isbn FROM books");
+$stmt = mysqli_prepare(
+    $conn,
+    "SELECT title, author, publication_year, status, isbn
+    FROM books
+    ORDER BY book_id DESC"
+);
 
 if ($stmt === false) {
     error_log("Unable to prepare books query: " . mysqli_error($conn));
@@ -14,7 +19,7 @@ if ($stmt === false) {
     error_log("Unable to retrieve books: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
-} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $publication, $availability, $isbn)) {
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $author, $publication_year, $status, $isbn)) {
     error_log("Unable to read books query results: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
@@ -23,8 +28,8 @@ if ($stmt === false) {
         $books[] = [
             "title" => $title,
             "author" => $author,
-            "year" => $publication,
-            "status" => strtolower(trim($availability)),
+            "publication_year" => $publication_year === null ? "" : (string)$publication_year,
+            "status" => $status,
             "isbn" => $isbn
         ];
     }
@@ -46,9 +51,9 @@ if ($stmt === false) {
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="filterDropdown" aria-label="Filter books by status">
                     <li><a class="dropdown-item active" href="#" data-status="all">All Books</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="available">Available</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="sold">Sold</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="unavailable">Unavailable</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="Available">Available</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="Reserved">Reserved</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="Sold">Sold</a></li>
                 </ul>
             </div>
         </div>
@@ -63,10 +68,15 @@ if ($stmt === false) {
                 </li>
             <?php else: ?>
                 <?php foreach ($books as $book): ?>
-                    <?php $status = htmlspecialchars($book["status"], ENT_QUOTES, "UTF-8"); ?>
-                    <li class="book-item" data-status="<?php echo $status; ?>">
+                    <?php
+                    $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+                        ? $book["status"]
+                        : "Reserved";
+                    $statusClass = strtolower($status);
+                    ?>
+                    <li class="book-item" data-status="<?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>">
                         <div class="book-info">
-                            <?php if ($book["isbn"] !== ""): ?>
+                            <?php if (is_string($book["isbn"]) && $book["isbn"] !== ""): ?>
                                 <a class="book-title"
                                     href="details.php?isbn=<?php echo rawurlencode($book["isbn"]); ?>"
                                     aria-label="View details for <?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?>">
@@ -77,8 +87,8 @@ if ($stmt === false) {
                             <?php endif; ?>
                             <span class="book-author"><?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></span>
                         </div>
-                        <span class="book-year"><?php echo htmlspecialchars($book["year"], ENT_QUOTES, "UTF-8"); ?></span>
-                        <span class="book-status status-<?php echo $status; ?>"><?php echo htmlspecialchars(ucfirst($book["status"]), ENT_QUOTES, "UTF-8"); ?></span>
+                        <span class="book-year"><?php echo htmlspecialchars($book["publication_year"], ENT_QUOTES, "UTF-8"); ?></span>
+                        <span class="book-status status-<?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>"><?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?></span>
                     </li>
                 <?php endforeach; ?>
                 <li class="book-item empty-state<?php echo $books ? " d-none" : ""; ?>" id="booksEmptyState">

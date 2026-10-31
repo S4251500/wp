@@ -4,7 +4,7 @@ include __DIR__ . "/assets/includes/database_connectivity.inc";
 $pageTitle = "Gallery - BookVerse";
 $books = [];
 $booksQueryFailed = false;
-$stmt = mysqli_prepare($conn, "SELECT title, coverID FROM books ORDER BY id DESC LIMIT 12");
+$stmt = mysqli_prepare($conn, "SELECT title, image_path FROM books ORDER BY book_id DESC LIMIT 12");
 
 if ($stmt === false) {
     error_log("Unable to prepare gallery query: " . mysqli_error($conn));
@@ -13,18 +13,19 @@ if ($stmt === false) {
     error_log("Unable to retrieve gallery books: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
-} elseif (!mysqli_stmt_bind_result($stmt, $title, $coverID)) {
+} elseif (!mysqli_stmt_bind_result($stmt, $title, $image_path)) {
     error_log("Unable to read gallery query results: " . mysqli_stmt_error($stmt));
     $booksQueryFailed = true;
     mysqli_stmt_close($stmt);
 } else {
     while (mysqli_stmt_fetch($stmt)) {
         $coverImage = null;
-        if (is_string($coverID) && preg_match('/\A[a-f0-9]{1,13}\z/i', $coverID)) {
+        $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
+        if ($coverNumber !== false && $coverNumber > 0 && $coverNumber <= 2147483647) {
             foreach (["jpg", "png"] as $extension) {
-                $coverPath = __DIR__ . "/assets/images/covers/" . $coverID . "." . $extension;
+                $coverPath = __DIR__ . "/assets/images/" . $coverNumber . "." . $extension;
                 if (is_file($coverPath)) {
-                    $coverImage = "./assets/images/covers/" . rawurlencode($coverID) . "." . $extension;
+                    $coverImage = "./assets/images/" . $coverNumber . "." . $extension;
                     break;
                 }
             }
@@ -32,7 +33,7 @@ if ($stmt === false) {
 
         $books[] = [
             "title" => $title,
-            "image" => $coverImage
+            "image_path" => $coverImage
         ];
     }
     mysqli_stmt_close($stmt);
@@ -56,20 +57,20 @@ include __DIR__ . "/assets/includes/nav.inc";
             <?php foreach ($books as $index => $book): ?>
                 <?php
                 $safeTitle = htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8");
-                $imagePath = $book["image"] ?? "./assets/images/allBooks.svg";
-                $imageAlt = $book["image"] === null
+                $image_path = $book["image_path"] ?? "./assets/images/allBooks.svg";
+                $imageAlt = $book["image_path"] === null
                     ? "No cover image available for " . $book["title"]
                     : $book["title"] . " cover";
                 ?>
                 <button class="gallery-trigger" type="button"
                     aria-label="View <?php echo $safeTitle; ?> cover"
                     data-image-index="<?php echo $index; ?>"
-                    data-image-src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, "UTF-8"); ?>"
+                    data-image-src="<?php echo htmlspecialchars($image_path, ENT_QUOTES, "UTF-8"); ?>"
                     data-image-title="<?php echo $safeTitle; ?>"
                     data-bs-toggle="modal" data-bs-target="#galleryModal">
-                    <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, "UTF-8"); ?>"
+                    <img src="<?php echo htmlspecialchars($image_path, ENT_QUOTES, "UTF-8"); ?>"
                         alt="<?php echo htmlspecialchars($imageAlt, ENT_QUOTES, "UTF-8"); ?>"
-                        class="gallery-img<?php echo $book["image"] === null ? " gallery-img-placeholder" : ""; ?>">
+                        class="gallery-img<?php echo $book["image_path"] === null ? " gallery-img-placeholder" : ""; ?>">
                 </button>
             <?php endforeach; ?>
         <?php endif; ?>

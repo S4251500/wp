@@ -220,6 +220,223 @@ None identified during syntax and whitespace checks.
 
 ---
 
+## AI Task 6
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Change uploaded book cover identifiers from random hexadecimal strings to random integers suitable for an SQL `INT` field.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Edit the image handling system so the SQL database uses a generated random number with an integer data type.
+
+**AI Output Summary:**
+Changed new cover IDs to positive random integers, added collision checks against existing book records and cover files, bound the value as an integer, and updated cover image lookup on the home, gallery, and details pages.
+
+**What You Accepted:**
+The integer ID generation, collision checks, integer database binding, and integer-based image paths.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+PHP syntax checks passed for the four modified PHP pages, and `git diff --check` reported no whitespace errors. Database behavior was not tested.
+
+**Issues Identified:**
+The database schema is not included in the repository; the `books.coverID` column must be configured as `INT` in the database. Existing string cover IDs may need to be migrated before changing that column type.
+
+---
+
+## AI Task 7
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Align book queries and inserts with the supplied users and books schema while preserving the existing form condition and status values.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Update all database queries to use the supplied schema columns. Keep the existing condition values rather than changing the form to match the `book_condition` ENUM, and retain the random integer cover identifier.
+
+**AI Output Summary:**
+Updated book queries to use `book_id`, `publication_year`, `book_condition`, `status`, and `image_path`. The form now submits the database ENUM values directly. Image uploads store a numeric `cover_id` and a relative image path.
+
+**What You Accepted:**
+The schema column updates, direct use of the condition and status ENUM values, and use of `image_path` alongside the integer cover ID.
+
+**What You Changed:**
+Removed the intermediate form-to-database value mappings and changed the form options to the supplied ENUM values.
+
+**Validation Performed:**
+PHP syntax checks passed for all PHP pages, `git diff --check` reported no whitespace errors, and a query/column-name review found no remaining references to the old book column names. Database execution was not tested.
+
+**Issues Identified:**
+The supplied books schema does not define `cover_id`. This was subsequently fixed by checking image-path uniqueness and inserting only the supplied schema's `image_path` column.
+
+---
+
+## AI Task 8
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Store newly uploaded book covers directly inside `assets/images` with a numeric filename matching their image path.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Ensure a new cover image is stored locally inside `assets/images`, named using its generated number, and that this location is saved in `image_path`.
+
+**AI Output Summary:**
+Changed cover uploads to save as `assets/images/<number>.<extension>`, store that relative path in `image_path`, and updated book image lookups to accept that path format.
+
+**What You Accepted:**
+The direct `assets/images` upload location and numeric filename/path handling.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+Pending PHP syntax checks and whitespace validation.
+
+**Issues Identified:**
+No runtime database/upload test was performed.
+
+---
+
+## AI Task 9
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Fix book cover uploads failing because the code referenced a `cover_id` database column not included in the supplied schema.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Investigate why adding a book reports that its cover was not saved and make cover storage work with the posted database schema.
+
+**AI Output Summary:**
+Changed the uniqueness query to compare the generated numeric filename's relative path against `image_path`, and removed the unsupported `cover_id` column from the book insert.
+
+**What You Accepted:**
+Using `image_path` as the database's cover reference while keeping the generated number in the local filename under `assets/images`.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+PHP syntax validation passed, `git diff --check` reported no whitespace errors, the cover query/insert only reference `image_path`, and the insert has ten placeholders with ten bind types. Runtime upload/database behavior was not tested.
+
+**Issues Identified:**
+The upload and SQL operation still need runtime verification against the local database.
+
+---
+
+## AI Task 10
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Rename PHP variables and book data keys to match the supplied database column names.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Align the variable names with the new database schema without changing query behavior or stored values.
+
+**AI Output Summary:**
+Renamed book-related variables and associative keys to use names such as `publication_year`, `book_condition`, `status`, and `image_path`.
+
+**What You Accepted:**
+The schema-aligned names in book form handling and query result handling.
+
+**What You Changed:**
+Updated the corresponding form field names and labels so submitted values continue to match their renamed PHP keys.
+
+**Validation Performed:**
+PHP syntax checks passed for all PHP pages, `git diff --check` reported no whitespace errors, and a search confirmed the previous schema-mismatched book variable and data-key names are no longer used.
+
+**Issues Identified:**
+No runtime database test was performed.
+
+---
+
+## AI Task 11
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Fix the add-book form hanging while searching for an unused cover image filename.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Investigate why a second add-book submission stays waiting for localhost and fix the issue.
+
+**AI Output Summary:**
+Reviewed the Apache PHP error log, which showed repeated maximum-execution-time errors in the image-path collision loop. The initial change used a fresh prepared statement per filename candidate and stopped after ten attempts, but that did not resolve the problem because the local database column type differed from the posted schema.
+
+**What You Accepted:**
+The bounded retry loop and per-attempt query lifecycle.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+PHP syntax and whitespace checks passed. The local image-path lookup ran three times without hanging, but a later schema check found that the local `image_path` column is `INT` and contains `0`. The issue was addressed in AI Task 12. No full book insertion was attempted.
+
+**Issues Identified:**
+The posted schema defines `image_path` as `VARCHAR(255)`, but the local database currently defines it as `INT(255)`.
+
+---
+
+## AI Task 12
+
+**Date:**
+31/10/2026
+
+**Task Description:**
+Fix cover filename generation failing because the local `image_path` column is an integer rather than a path string.
+
+**Tool Used:**
+GitHub Copilot
+
+**Prompt / Input:**
+Investigate why the add-book form still cannot generate a cover name.
+
+**AI Output Summary:**
+Changed `image_path` to store the numeric image filename, made collision checks bind the candidate as an integer, and updated the home, gallery, and details pages to reconstruct the local image filename using its extension.
+
+**What You Accepted:**
+Store the numeric filename in `image_path` and use the extension found in the local `assets/images` folder to display covers.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+PHP syntax checks passed for all four modified PHP pages, `git diff --check` reported no whitespace errors, and five integer filename lookups against the local database each returned zero matching rows. No full book insertion was attempted.
+
+**Issues Identified:**
+The local database ENUM values also differ from the values in the posted schema; an add operation may still fail when inserting the condition or status unless the local schema is updated.
+
+---
+
 # 📌 Final Reflection (End of Assessment)
 
 **What AI was most useful for:**  
