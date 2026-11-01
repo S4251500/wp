@@ -3,6 +3,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 $currentUserId = filter_var($_SESSION["user_id"] ?? null, FILTER_VALIDATE_INT);
+$bookNotice = $_SESSION["book_notice"] ?? "";
+unset($_SESSION["book_notice"]);
 
 include __DIR__ . "/assets/includes/database_connectivity.inc";
 
@@ -15,7 +17,7 @@ $isbn = is_string($isbn) ? trim($isbn) : "";
 if ($isbn !== "" && strlen($isbn) <= 20) {
     $stmt = mysqli_prepare(
         $conn,
-        "SELECT title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path
+        "SELECT book_id, user_ID, title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path
         FROM books
         WHERE isbn = ?
         LIMIT 1"
@@ -34,6 +36,8 @@ if ($isbn !== "" && strlen($isbn) <= 20) {
         mysqli_stmt_close($stmt);
     } elseif (!mysqli_stmt_bind_result(
         $stmt,
+        $bookId,
+        $ownerId,
         $title,
         $author,
         $genre,
@@ -51,6 +55,8 @@ if ($isbn !== "" && strlen($isbn) <= 20) {
     } else {
         if (mysqli_stmt_fetch($stmt)) {
             $book = [
+                "book_id" => $bookId,
+                "owner_id" => $ownerId,
                 "title" => $title,
                 "author" => $author,
                 "genre" => $genre,
@@ -72,6 +78,9 @@ include __DIR__ . "/assets/includes/nav.inc";
 ?>
 
 <main class="container content details-content">
+    <?php if (is_string($bookNotice) && $bookNotice !== ""): ?>
+        <p class="alert alert-info" role="status"><?php echo htmlspecialchars($bookNotice, ENT_QUOTES, "UTF-8"); ?></p>
+    <?php endif; ?>
     <?php if ($queryFailed): ?>
         <div class="details-message" role="alert">
             <h1>Book details unavailable</h1>
@@ -90,6 +99,12 @@ include __DIR__ . "/assets/includes/nav.inc";
         </div>
     <?php else: ?>
         <?php
+        $isOwner = $currentUserId !== false
+            && $currentUserId > 0
+            && (int)$book["owner_id"] === $currentUserId;
+        if ($isOwner && !isset($_SESSION["csrf_token"])) {
+            $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+        }
         $status = in_array($book["status"], ["available", "unavailable", "sold"], true)
             ? $book["status"]
             : "unavailable";
@@ -100,9 +115,9 @@ include __DIR__ . "/assets/includes/nav.inc";
         $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
         if ($coverNumber !== false && $coverNumber > 0 && $coverNumber <= 2147483647) {
             foreach (["jpg", "png"] as $extension) {
-                $coverPath = __DIR__ . "/assets/images/" . $coverNumber . "." . $extension;
+                $coverPath = __DIR__ . "/assets/images/covers/" . $coverNumber . "." . $extension;
                 if (is_file($coverPath)) {
-                    $coverImage = "./assets/images/" . $coverNumber . "." . $extension;
+                    $coverImage = "./assets/images/covers/" . $coverNumber . "." . $extension;
                     break;
                 }
             }
@@ -159,7 +174,16 @@ include __DIR__ . "/assets/includes/nav.inc";
 
                 <div class="details-actions">
                     <a class="btn details-back" href="books.php">&larr; Back to Books</a>
-                    <?php if ($currentUserId !== false && $currentUserId > 0): ?>
+                    <?php if ($isOwner): ?>
+                        <a class="btn details-edit" href="edit.php?id=<?php echo (int)$book["book_id"]; ?>">Edit</a>
+                        <form class="details-delete-form" method="post" action="delete.php"
+                            onsubmit="return confirm('Delete this book permanently?');">
+                            <input type="hidden" name="book_id" value="<?php echo (int)$book["book_id"]; ?>">
+                            <input type="hidden" name="csrf_token"
+                                value="<?php echo htmlspecialchars($_SESSION["csrf_token"], ENT_QUOTES, "UTF-8"); ?>">
+                            <button class="btn details-delete" type="submit">Delete</button>
+                        </form>
+                    <?php elseif ($currentUserId !== false && $currentUserId > 0): ?>
                         <a class="btn details-similar" href="add.php">+ Add Similar Book</a>
                     <?php endif; ?>
                 </div>

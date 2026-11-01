@@ -23,9 +23,9 @@ if ($stmt === false) {
         $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
         if ($coverNumber !== false && $coverNumber > 0 && $coverNumber <= 2147483647) {
             foreach (["jpg", "png"] as $extension) {
-                $coverPath = __DIR__ . "/assets/images/" . $coverNumber . "." . $extension;
+                $coverPath = __DIR__ . "/assets/images/covers/" . $coverNumber . "." . $extension;
                 if (is_file($coverPath)) {
-                    $coverImage = "./assets/images/" . $coverNumber . "." . $extension;
+                    $coverImage = "./assets/images/covers/" . $coverNumber . "." . $extension;
                     break;
                 }
             }

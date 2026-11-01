@@ -1,4 +1,10 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$bookNotice = $_SESSION["book_notice"] ?? "";
+unset($_SESSION["book_notice"]);
+
 include __DIR__ . "/assets/includes/header.inc";
 include __DIR__ . "/assets/includes/nav.inc";
 include __DIR__ . "/assets/includes/database_connectivity.inc";
@@ -38,6 +44,9 @@ if ($stmt === false) {
 ?>
 
 <main class="container content">
+    <?php if (is_string($bookNotice) && $bookNotice !== ""): ?>
+        <p class="alert alert-info" role="status"><?php echo htmlspecialchars($bookNotice, ENT_QUOTES, "UTF-8"); ?></p>
+    <?php endif; ?>
     <h1><img src="./assets/images/gallery.svg" alt="" aria-hidden="true"> All Books</h1>
 
     <!-- Filter Section -->

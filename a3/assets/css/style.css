@@ -1202,6 +1202,7 @@ Features: Filtering books by status
 .details-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
 }
 
@@ -1226,6 +1227,23 @@ Features: Filtering books by status
     background: var(--color-primary-light);
 }
 
+.details-edit,
+.details-edit:hover {
+    background: #ffc107;
+    color: #172033;
+}
+
+.details-delete-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.details-delete,
+.details-delete:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
 .details-message {
     max-width: 700px;
     margin: 2rem auto;
@@ -1237,6 +1255,168 @@ Features: Filtering books by status
 
 .details-message p {
     margin: 0 0 1rem;
+}
+
+.edit-content {
+    width: min(100%, 560px);
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+}
+
+.edit-content .add-title {
+    font-size: 1.4rem;
+}
+
+.edit-content .add-title span {
+    color: var(--color-primary);
+}
+
+.edit-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 1rem;
+}
+
+.edit-form .edit-inline-field {
+    grid-column: span 1;
+}
+
+.edit-cover-preview {
+    display: block;
+    width: 100px;
+    height: 72px;
+    margin: 0 0 0.65rem;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.edit-cover-missing {
+    margin: 0 0 0.5rem;
+    color: var(--text-muted-dark);
+    font-size: 0.75rem;
+}
+
+.edit-form small {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-muted-dark);
+    font-size: 0.68rem;
+}
+
+.edit-submit {
+    background: var(--color-primary);
+    color: var(--bg-white);
+}
+
+.seller-content {
+    width: 100%;
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+}
+
+.seller-layout {
+    display: grid;
+    grid-template-columns: minmax(175px, 0.7fr) minmax(0, 1.8fr);
+    align-items: start;
+    gap: 1rem;
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.seller-profile {
+    padding: 0.8rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 7px;
+    background: var(--surface-form);
+    color: var(--text-on-dark);
+    text-align: center;
+}
+
+.seller-profile h1 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.seller-location {
+    margin: 0 0 0.75rem;
+    color: var(--text-muted-dark);
+    font-size: 0.8rem;
+}
+
+.seller-bio {
+    margin: 0;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.seller-books-section h2 {
+    margin: 0 0 0.6rem;
+    font-size: 1.25rem;
+}
+
+.seller-books-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 0.75rem;
+}
+
+.seller-book-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-dark);
+    border-radius: 7px;
+    background: var(--surface-form);
+}
+
+.seller-book-cover {
+    display: block;
+    height: 190px;
+    background: var(--surface-input-overlay);
+}
+
+.seller-book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.seller-book-info {
+    padding: 0.55rem 0.6rem 0.65rem;
+    color: var(--text-on-dark);
+}
+
+.seller-book-info h3 {
+    min-height: 2.25em;
+    margin: 0 0 0.3rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.seller-book-info p {
+    margin: 0 0 0.45rem;
+    font-size: 0.75rem;
+}
+
+.seller-view-button,
+.seller-view-button:hover {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-primary);
+    color: var(--bg-white);
+    font-size: 0.7rem;
+}
+
+.seller-empty-state {
+    padding: 1rem;
+    border: 1px solid var(--border-dark);
+    border-radius: 7px;
+    background: var(--surface-form);
+    color: var(--text-on-dark);
+}
+
+.seller-empty-state p {
+    margin-bottom: 0.75rem;
 }
 
 /* Filter Section */
@@ -1406,6 +1586,28 @@ input:focus {
 
     .nav-account-links {
         margin-left: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .edit-form {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-form .edit-inline-field {
+        grid-column: 1 / -1;
+    }
+
+    .seller-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .seller-books-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .seller-book-cover {
+        height: 160px;
     }
 }
 

@@ -41,6 +41,7 @@
                         <?php echo htmlspecialchars((string) $_SESSION["username"], ENT_QUOTES, "UTF-8"); ?>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end nav-account-dropdown">
+                        <li><a class="dropdown-item" href="seller.php">My Profile &amp; Books</a></li>
                         <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                     </ul>
                 </li>

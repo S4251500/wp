@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$errors) {
         include __DIR__ . "/assets/includes/database_connectivity.inc";
 
-        $coverDirectory = __DIR__ . "/assets/images";
+        $coverDirectory = __DIR__ . "/assets/images/covers";
         if (!is_dir($coverDirectory) || !is_writable($coverDirectory)) {
             error_log("Book cover directory is missing or not writable: " . $coverDirectory);
             $errors[] = "The cover image could not be saved. Please try again later.";
@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             } elseif (!$errors) {
                 $stmt = mysqli_prepare(
                     $conn,
-                    "INSERT INTO books (title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path, user_id)
+                    "INSERT INTO books (title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path, user_ID)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 );
 

@@ -1,544 +1,322 @@
-# COSC2446 Web Programming – Assessment 3  
+# COSC2446 Web Programming — Assessment 3
 # BookVerse Online Bookstore Platform
 
 ## Student Details
 
 | Item | Details |
 |---|---|
-| Student name | TODO |
-| Student ID | TODO |
-| GitHub repository URL | TODO |
-| Deployed website URL | TODO |
+| Student name | Not provided in the project workspace |
+| Student ID | S4251500 |
+| GitHub repository | [S4251500/wp](https://github.com/S4251500/wp) |
+| Deployed website URL | Not provided |
 
----
+## 1. Project Overview
 
-## 1. Purpose of This README
+BookVerse is a PHP and MySQL bookstore where visitors can browse book listings, view details, and explore cover images. 
 
-This README documents the Assessment 3 project and should be completed by the student.
+Registered users can add books, view their own profile and listings, and edit or delete books they own. 
 
-It is used to:
+Password hashes and session authentication protect users'actions when using the website. 
 
-- summarise the project;
-- explain the structure and technical choices;
-- document database, security, authentication, testing, and deployment decisions;
-- support marking of documentation and submission quality;
-- help AI tools such as GitHub Copilot follow the assessment requirements.
+## 2. Development Instructions and Constraints
 
-TODO: After completing the project, update every TODO section in this file.
+- Use the Assessment 3 brief as the source of truth for required features and technologies.
+- Keep PHP, HTML, CSS, JavaScript, MySQL, and procedural MySQLi code beginner-friendly and explainable.
+- Use the existing `assets/includes/` files for the database connection and shared page layout.
+- Use prepared statements for SQL queries that include user input.
+- Validate submitted data on the server and escape rendered database content with `htmlspecialchars()`.
+- Protect authenticated pages with a validated session `user_id`. Check ownership on the server for every edit or delete action.
+- Hash passwords with PHP's password hashing functions; never store plain-text passwords.
+- Validate uploads by file size and detected MIME type. Do not trust the original uploaded filename.
+- Keep the existing Bootstrap 5 integration and styles in `assets/css/style.css`; do not add an unapproved framework.
+- Keep client-side behavior in `assets/js/scripts.js` and preserve accessible labels, alt text, and responsive layouts.
+- Record AI assistance and debugging honestly in `process-evidence.md`; personally review and test generated changes before submission.
+- Do not put database credentials, private data, or test credentials in documentation.
 
----
-
-## 2. Copilot and AI Coding Instructions
-
-This section must be completed by the student after reading the Assessment 3 brief.
-
-Write clear instructions that would help GitHub Copilot or another AI tool produce code that follows the Assessment 3 requirements.
-
-Your instructions should help the AI understand what it is allowed to generate, what it must not generate, and which assessment constraints must be followed.
-
-TODO: Include instructions about:
-
-- allowed technologies;
-- technologies, frameworks, libraries, or tools that must not be used;
-- required files and folders;
-- PHP include file requirements;
-- database connection requirements;
-- MySQLi procedural prepared statement requirements;
-- session and flash-message requirements;
-- registration, login, and logout requirements;
-- authentication and authorisation requirements;
-- owner-only edit and delete requirements;
-- CRUD requirements;
-- search requirements;
-- seller page requirements;
-- image upload and validation requirements;
-- CSS and JavaScript file requirements;
-- Bootstrap layout requirements;
-- gallery modal requirements;
-- book status filtering requirements;
-- deletion confirmation requirements;
-- security requirements;
-- deployment requirements;
-- AI usage and process-evidence requirements.
-
-### My Copilot / AI instructions
-
-TODO: Write your Copilot/AI instructions here in clear bullet points.
-
----
-
-## 3. Project Overview
-
-Briefly describe the purpose of the BookVerse extended project.
-
-TODO: In 3–5 sentences, explain:
-
-- what BookVerse is;
-- what authenticated users can do;
-- what anonymous visitors can do;
-- how Assessment 3 extends Assessment 2;
-- which technologies were used;
-- how the website uses database persistence.
-
----
-
-## 4. Website Structure
-
-Complete the table below by describing the purpose of each page.
+## 3. Website Structure
 
 | File | Purpose |
 |---|---|
-| `index.php` | TODO |
-| `books.php` | TODO |
-| `gallery.php` | TODO |
-| `details.php` | TODO |
-| `seller.php` | TODO |
-| `search.php` | TODO |
-| `register.php` | Displays the account registration form. |
-| `login.php` | Displays the account login form. |
-| `logout.php` | Ends the active session and returns the visitor to the home page. |
-| `add.php` | TODO |
-| `edit.php` | TODO |
-| Optional processing files | TODO, if used |
+| `index.php` | Home page with a static three-slide cover carousel and up to four latest database books. |
+| `books.php` | Lists all books and provides a client-side availability filter. |
+| `gallery.php` | Shows recent book covers in a Bootstrap modal gallery. |
+| `details.php` | Looks up a book by ISBN and displays its information; owners see edit and delete controls. |
+| `seller.php` | Authenticated user's profile and books, selected using the session user ID. |
+| `register.php` | Validates and creates an account with a bcrypt password hash. |
+| `login.php` | Verifies the account password and establishes an authenticated session. |
+| `logout.php` | Clears the session and returns the visitor to the home page. |
+| `add.php` | Authenticated book creation form and cover upload handler. |
+| `edit.php` | Owner-only book editing form and optional cover replacement handler. |
+| `delete.php` | POST-only, owner-checked book deletion handler. |
+| `process-evidence.md` | AI usage log and debugging/process evidence. |
+| `search.php` | Not present in the current project; keyword search is not implemented. |
 
----
+## 4. Project Folder Structure
 
-## 5. Project Folder Structure
-
-Show the final structure of your `a3` folder.
-
-TODO: Update this structure if your final project contains additional required files or folders.
-
-```
+```text
 a3/
 ├── assets/
 │   ├── css/
 │   │   └── style.css
-│   ├── js/
-│   │   └── scripts.js
-│   └── images/
-│       └── covers/
-├── includes/
-│   ├── db_connect.inc
-│   ├── header.inc
-│   ├── nav.inc
-│   └── footer.inc
-├── index.php
+│   ├── images/
+│   │   └── covers/                 Static 
+│   │       └── <numeric-id>.jpg|png    Uploaded covers
+│   ├── includes/
+│   │   ├── database_connectivity.inc
+│   │   ├── footer.inc
+│   │   ├── header.inc
+│   │   └── nav.inc
+│   └── js/
+│       └── scripts.js
+├── add.php
 ├── books.php
-├── gallery.php
+├── delete.php
 ├── details.php
-├── seller.php
-├── search.php
-├── register.php
+├── edit.php
+├── gallery.php
+├── index.php
 ├── login.php
 ├── logout.php
-├── add.php
-├── edit.php
+├── process-evidence.md
 ├── README.md
-└── process-evidence.md
-
-Optional:
-├── process_add.php
-├── process_edit.php
-├── process_delete.php
-├── process_register.php
-└── process_login.php
+├── register.php
+└── seller.php
 ```
 
----
+## 5. Technologies
 
-## 6. Technologies Used
-
-Complete the table below. Explain how each technology was used in your project.
-
-| Technology | How it was used in this project |
+| Technology | Use in BookVerse |
 |---|---|
-| HTML5 | TODO |
-| CSS3 | TODO |
-| Bootstrap 5 | TODO |
-| JavaScript | TODO |
-| PHP | TODO |
-| MySQL | TODO |
-| MySQLi procedural prepared statements | TODO |
-| PHP sessions | TODO |
-| Google Fonts | TODO |
-| Material Icons | TODO |
-| GitHub | TODO |
-| Coreteaching server | TODO |
-| Jacob 5 database server | TODO |
-| AI tools | TODO |
+| HTML5 | Semantic page structure, forms, and accessible content. |
+| CSS3 | Responsive layout, colors, navigation, cards, and page styling in `assets/css/style.css`. |
+| Bootstrap 5 | Grid/utilities, alerts, dropdowns, carousel, and gallery modal. CSS and JavaScript are loaded from the Bootstrap CDN. |
+| JavaScript | Gallery modal navigation, book status filtering, and add-form file-extension validation. |
+| PHP | Server-rendered pages, form validation, sessions, uploads, and database operations. |
+| MySQL | Stores accounts and book records. |
+| Procedural MySQLi | Opens the database connection and executes prepared statements. |
+| PHP sessions | Stores the authenticated account ID/name and one-time notices. |
+| Google Fonts | `Righteous` and `Elms Sans` are imported by the stylesheet. |
+| Icons | The current interface uses supplied SVG assets, inline SVG, and a few text glyphs; Material Icons are not included. |
+| Git/GitHub | Version control; repository remote is `S4251500/wp`. |
+| RMIT Jacob 5/Coreteaching | Production database host configuration is in `database_connectivity.inc`; deployment URL and folder were not provided. |
+| AI tools | Copilot assistance is recorded in `process-evidence.md`. |
 
----
+## 6. Design and Layout
 
-## 7. Design and Layout
+The site uses a dark navy background, teal accents, and light text with the supplied book-cover artwork. `Righteous` is used for display headings and `Elms Sans` for body text. 
 
-Based on the assessment document, describe the required design and layout choices.
+Bootstrap was used for responsive layouts and interactive components.
 
-TODO: Explain:
+The project stylesheet supplies the BookVerse colors and page-specific styling. 
 
-- how the design should continue from previous assessments;
-- how the required colour palette should be used;
-- how the required fonts should be used;
-- how Material Icons should be used;
-- how Bootstrap should be used for layout and responsiveness;
-- how shared include files support consistency across pages;
-- how navigation changes depending on whether the user is logged in.
+Using a shared header, navigation bar, and footer includes keep page framing consistent. 
 
----
+The main navigation shows Add Book only to signed-in users; the signed-in account dropdown contains My Profile & Books and Logout.
 
-## 8. Required Features
+## 7. Features and Current Behavior
 
-Complete the table below by explaining where and how each required feature should be implemented.
-
-| Feature | Page/File | Explanation |
+| Feature | Page/File | Current implementation |
 |---|---|---|
-| Carousel of latest images | `index.php` | TODO |
-| Latest 4 books from database | `index.php` | TODO |
-| Book table | `books.php` | TODO |
-| Status filter | `books.php` | TODO |
-| Book detail link | `books.php` / `details.php` | TODO |
-| Details page | `details.php` | TODO |
-| Seller link | `index.php`, `details.php`, `books.php` | TODO |
-| Seller page | `seller.php` | TODO |
-| Gallery grid | `gallery.php` | TODO |
-| Bootstrap image modal | `gallery.php` | TODO |
-| Search | `search.php` | TODO |
-| User registration | `register.php` | TODO |
-| User login | `login.php` | TODO |
-| User logout | `logout.php` | TODO |
-| Add Book form | `add.php` | TODO |
-| Edit Book form | `edit.php` | TODO |
-| Delete action | `details.php` or optional processing file | TODO |
-| Image upload | `add.php` / `edit.php` | TODO |
-| Flash messages | Session-based pages/actions | TODO |
+| Cover carousel | `index.php` | Static three-slide carousel using files in `assets/images/covers/`; it is not populated from the database. |
+| Latest books | `index.php` | Prepared query selects up to four records ordered by descending `book_id`. |
+| Browse books | `books.php` | Displays book title, author, publication year, and status in a list. |
+| Status filter | `books.php`, `scripts.js` | Client-side filter uses each book's `data-status`. |
+| Book details | `details.php` | Looks up one book using the `isbn` query parameter. |
+| Owner controls | `details.php` | Edit and Delete appear only when the session user ID equals the book's `user_ID`. |
+| My Profile & Books | `seller.php`, `nav.inc` | Authenticated-only account dropdown link; profile and listings are fetched for the current session user. |
+| Cover gallery | `gallery.php`, `scripts.js` | Displays up to 12 recent covers and opens a Bootstrap modal with previous/next controls. |
+| Search | — | No `search.php` or keyword-search form/query exists in the current project. |
+| Registration | `register.php` | Requires a username, valid email, password, and matching confirmation; unique database keys reject duplicate usernames/emails. |
+| Login and logout | `login.php`, `logout.php` | Password hash verification creates the session; logout clears it. |
+| Add book | `add.php` | Authenticated users can add book information and a required JPG/PNG cover. |
+| Edit book | `edit.php` | Only the owner can edit; a replacement cover is optional. |
+| Delete book | `delete.php` | POST-only deletion with session, ownership, and CSRF-token checks; browser confirmation is shown on the details page. |
+| User feedback | `index.php`, `details.php`, `books.php`, forms | Login and book actions use session notices; registration success is indicated by the `registered` query parameter. |
 
----
-
-## 9. Database Design and Use
-
-Describe how the database is used in your project.
-
-TODO: Explain:
+## 8. Database Design and Use
 
-- which database server is used locally and on deployment;
-- the database name used on Jacob 5;
-- which table or tables are used;
-- how the supplied schema was followed;
-- how records are retrieved and displayed;
-- how new records are inserted;
-- how existing records are edited;
-- how records are deleted;
-- how books are linked to owners;
-- how `details.php` retrieves one selected record;
-- how `seller.php` retrieves records for one selected owner;
-- how `search.php` searches records;
-- how prepared statements are used.
+The connection include selects the local `bookverse` database for localhost and the configured student database on jacob 5. 
+ 
+The tables have the following structure:
 
-### Database tables and important fields
+1. Table: users 
+`user_id`, `username`, `email`, `password`, `phone`, `location`, `bio`, `joined_at` 
 
-Complete this section using the schema supplied for the assessment.
-
-| Table | Important fields | Purpose |
-|---|---|---|
-| TODO | TODO | TODO |
-| TODO | TODO | TODO |
+Username and email are unique.
 
----
+`password` contains a password hash. 
 
-## 10. PHP Includes and Reusable Structure
+2. Table: books 
 
-Describe how the include files are used.
+`book_id`, `user_ID`, `title`, `author`, `genre`, `publication_year`, `isbn`, `description`, `price`, `book_condition`, `status`, `image_path`, `created_at` 
 
-| Include file | Purpose |
-|---|---|
-| `includes/db_connect.inc` | TODO |
-| `includes/header.inc` | TODO |
-| `includes/nav.inc` | TODO |
-| `includes/footer.inc` | TODO |
-| Other optional include files | TODO |
+The books schema uses the condition values `new`, `fair`, and `old`, and status values `available`,`reserved`, `unavailable`, and `sold`. 
 
-TODO: Explain how these files reduce repetition and support consistent layout, database access, session messages, or navigation.
+`image_path` stores a numeric image identifier that corresponds to a JPG or PNG file in `assets/images/`. 
 
----
+The `user_ID` field links a book to `users.user_id`.
 
-## 11. Authentication, Sessions, and Access Control
+Pages use prepared statements for database queries. 
 
-Describe how authentication and sessions are implemented.
+`details.php` selects by ISBN; 
 
-TODO: Explain:
+`seller.php` selects the profile and books for the authenticated session user. 
 
-- how registration works;
-- how passwords are hashed before storage;
-- how login verifies passwords;
-- how sessions are used after login;
-- how logout works;
-- how flash messages are stored and displayed;
-- how anonymous and authenticated views differ;
-- which pages require login;
-- which actions are owner-only.
+Add and edit write the session user's ID to `books.user_ID`; edit and delete queries also require that owner ID.
 
-### Protected routes and actions
+## 9. Shared PHP Includes
 
-| Page or action | Who can access it? | How access is checked |
-|---|---|---|
-| `add.php` | Authenticated users | The page validates the session `user_id` before processing the form or displaying it; new rows store that ID in `books.user_ID`. |
-| `edit.php` | TODO | TODO |
-| Delete action | TODO | TODO |
-| Owner edit/delete buttons | TODO | TODO |
-| Anonymous visitor pages | TODO | TODO |
 
-Registration validates an email address, checks the password confirmation, stores a bcrypt password hash, and relies on the database's unique username and email constraints to prevent duplicates. Login looks up the username in `users` and creates `user_id` and `username` session values only after `password_verify()` succeeds. The Add Book navigation link is shown only for authenticated sessions, and direct requests to `add.php` redirect to login.
+1. `assets/includes/database_connectivity.inc` 
+Selects the configured database, opens the MySQLi connection, and sets UTF-8 character encoding.
 
----
+2. `assets/includes/header.inc` 
+Starts a session if needed, sets no-cache headers, and includes the document head, stylesheet, and Bootstrap bundle.
 
-## 12. CRUD Functionality
+3. `assets/includes/nav.inc` 
+Renders the shared navigation and session-aware account dropdown. 
 
-Describe how create, read, update, and delete functionality is implemented.
+4. `assets/includes/footer.inc` 
+Renders the shared footer.
 
-| CRUD operation | Page/File | Explanation |
-|---|---|---|
-| Create book | `add.php` / optional handler | TODO |
-| Read all books | `books.php` | TODO |
-| Read one book | `details.php` | TODO |
-| Update book | `edit.php` / optional handler | TODO |
-| Delete book | `details.php` / optional handler | TODO |
+## 10. Authentication and Access Control
 
-TODO: Explain how ownership is checked before editing or deleting a record.
+Registration validates the email with `FILTER_VALIDATE_EMAIL` and requires an `@`, hashes the password using bcrypt, and inserts into `users`. 
 
----
+Database unique constraints prevent duplicate usernames and emails. 
 
-## 13. Search, Filtering, and Seller Pages
+Login looks up the username with a prepared statement, verifies the hash using `password_verify()`, regenerates the session ID, and stores `user_id` and `username`. 
 
-Describe the dynamic browsing features.
+Logout clears the session and expires its cookie.
 
-| Feature | Page | Explanation |
-|---|---|---|
-| Status filtering | `books.php` | TODO |
-| Keyword search | `search.php` | TODO |
-| Seller page | `seller.php` | TODO |
+Browse, gallery, details, and home require no login and are public to view information from. 
 
-TODO: Explain:
+Add book requires the user to be in a session to access. (correct user_id)
 
-- how status filtering works;
-- how `data-status` is used;
-- how search uses prepared statements;
-- how the selected seller is identified;
-- how seller links are displayed.
+My Profile & Books require an authenticated user with the correct session ID; both profile and listing queries are scoped to that ID.
 
----
+Edit book can only be accessed by the book owner requiring matching `book_id` and `user_ID`.
 
-## 14. JavaScript Functionality
+Delete book is only allowed by book owner.
 
-Describe the JavaScript features that should be implemented in your website.
+## 11. CRUD, Forms, and Uploads
 
-| JavaScript feature | Page | How it works |
-|---|---|---|
-| Image extension validation | `add.php` / `edit.php` | TODO |
-| Image preview | `add.php` / `edit.php` | TODO |
-| Gallery modal | `gallery.php` | TODO |
-| Book status filter | `books.php` | TODO |
-| Delete confirmation modal | `details.php` | TODO |
 
----
+1. Record Creation - `add.php`  Validates required details and status/condition, validates a required JPG/PNG upload, and inserts the book with the session owner ID. 
 
-## 15. Form Handling and Validation
+2. Read Database - `index.php`, `books.php`, `details.php`, `seller.php`, `gallery.php` Use data retrieval in multiple ways such as: by retrieving all, selected, owner-specific, or recent gallery records. 
 
-Describe the validation and processing used on forms.
+3. Update Record - `edit.php` Validates submitted fields and optional replacement image, saves only when the current user owns the book. 
 
-TODO: Explain:
+4. Delete Record - `delete.php` Deletes a matching owner record after a POST and CSRF check.
 
-- which forms are included;
-- which fields are required;
-- how labels are associated with form fields;
-- which input types were used;
-- how client-side image validation works;
-- how server-side checks are performed;
-- how uploaded images are validated;
-- how uploaded image filenames are made unique;
-- what happens if no new image is uploaded during editing;
-- what feedback the user receives if an action succeeds or fails.
+Uploads are stored under `assets/images/` with a generated positive numeric filename; the original filename is not used. 
 
----
+A replaced or deleted image file is removed only after the database operation succeeds and the code finds no remaining book referencing that image. The upload directory must be writable by PHP. 
 
-## 16. File Uploads and File-System Hygiene
-
-Describe how image uploads are handled.
-
-TODO: Explain:
-
-- where uploaded images are stored;
-- how unique filenames are generated;
-- how the original filename is handled;
-- how old images are deleted when a record is edited;
-- how images are deleted when a record is deleted;
-- how `.gitignore` is used for uploaded/generated files;
-- how file permissions are handled on Coreteaching.
-
----
+When editing without an upload, the existing `image_path` remains unchanged.
 
-## 17. Security and Best Practices
-
-Briefly explain how your project addresses security and best practices.
-
-TODO: Mention relevant items such as:
-
-- MySQLi procedural prepared statements;
-- protection against SQL injection;
-- escaping database output with `htmlspecialchars()`;
-- validating query string values;
-- validating form input;
-- validating uploaded files;
-- unique uploaded filenames;
-- not relying on original uploaded filenames;
-- server-side ownership checks;
-- session-based access control;
-- flash messages;
-- not displaying raw database errors to users on the deployed site.
+The add form has client-side extension validation in `scripts.js`; The edit form currently relies on server-side validation and does not have a client-side image preview. 
 
----
+Delete confirmation uses the browser's built-in `confirm()` dialog, not a Bootstrap modal.
 
-## 18. Accessibility and Usability
+## 12. JavaScript
 
-Briefly describe what accessibility and usability features must be implemented.
+`assets/js/scripts.js` handles the gallery modal's image navigation, the Browse Books status filter, and extension validation for the add-book form. 
 
-TODO: Mention relevant items such as:
+The edit form has no JavaScript preview/extension checker. Bootstrap's JavaScript bundle provides the carousel, dropdowns, and modal behavior.
 
-- meaningful page titles;
-- semantic HTML;
-- form labels;
-- image `alt` text;
-- consistent navigation;
-- readable text;
-- colour contrast;
-- responsive layout;
-- clear user feedback;
-- error and success messages;
-- authenticated and anonymous user experience.
+## 13. Security and Accessibility
 
----
+- SQL containing user input uses prepared statements.
+- Database output is escaped with `htmlspecialchars()` before rendering.
+- Query-string and form values are validated before use.
+- Upload names are generated by the application; file size and detected MIME type are checked.
+- Edit/delete ownership is checked server-side; delete requests also use a session CSRF token.
+- Passwords are stored as hashes and checked with `password_verify()`.
+- Pages use labelled form controls, semantic landmarks, useful image alt text, and responsive CSS.
+- Page-level query errors are logged and forms generally show generic messages. The shared connection include currently prints a connection error if MySQL cannot connect; review that behavior before public deployment.
 
-## 19. Testing and Validation
+## 14. Validation and Testing Performed
 
-Complete this section after testing your website.
+1. 
+PHP syntax for all existing Assessment 3 PHP pages Passed with XAMPP `php -l`. 
 
-### Rendered HTML Validation
+`git diff --check` Passed after the recent page and navigation changes.
 
-| Page | Result | Notes |
-|---|---|---|
-| `index.php` | TODO: Pass / Issues found | TODO |
-| `books.php` | TODO: Pass / Issues found | TODO |
-| `gallery.php` | TODO: Pass / Issues found | TODO |
-| `details.php` | TODO: Pass / Issues found | TODO |
-| `seller.php` | TODO: Pass / Issues found | TODO |
-| `search.php` | TODO: Pass / Issues found | TODO |
-| `register.php` | TODO: Pass / Issues found | TODO |
-| `login.php` | TODO: Pass / Issues found | TODO |
-| `add.php` | TODO: Pass / Issues found | TODO |
-| `edit.php` | TODO: Pass / Issues found | TODO |
+2. 
+Anonymous access to `add.php`, `edit.php`, `delete.php`, and `seller.php` 
 
-### CSS Validation
+Redirected to `login.php` in local HTTP checks.
 
-| File | Result | Notes |
-|---|---|---|
-| `assets/css/style.css` | TODO: Pass / Issues found | TODO |
+3. 
+Local book details rendering 
 
-### Functionality Testing
+A local book details request returned HTTP 200.
 
-| Feature tested | Result | Notes |
-|---|---|---|
-| Navigation links | TODO | TODO |
-| Database connection | TODO | TODO |
-| Latest books display | TODO | TODO |
-| Books table | TODO | TODO |
-| Book status filter | TODO | TODO |
-| Details page query string | TODO | TODO |
-| Seller page query string | TODO | TODO |
-| Search | TODO | TODO |
-| Gallery modal | TODO | TODO |
-| Registration | TODO | TODO |
-| Login | TODO | TODO |
-| Logout | TODO | TODO |
-| Session flash messages | TODO | TODO |
-| Add Book form validation | TODO | TODO |
-| Image upload | TODO | TODO |
-| Image preview | TODO | TODO |
-| Edit Book | TODO | TODO |
-| Delete confirmation | TODO | TODO |
-| Owner-only access | TODO | TODO |
-| Anonymous user access | TODO | TODO |
-| Deployed site links/assets | TODO | TODO |
-| Deployed database content | TODO | TODO |
+4. 
+Authenticated local seller page 
 
----
+Temporary local session returned HTTP 200 and rendered the profile layout. 
 
-## 20. Deployment
+5. 
+Registration/login database operations 
 
-Provide details of your deployed website.
+Not verified as part of this README update. 
 
-| Item | Details |
-|---|---|
-| Deployed website URL | TODO |
-| Jacob 5 database name | TODO |
-| Deployment folder | TODO |
-| `.htaccess` location | TODO |
-| Upload folder permissions | TODO |
+6. 
+Authenticated edit/delete and image replacement/deletion 
 
-TODO: In 2–4 sentences, explain how you checked that the deployed website, authentication, uploads, and database functionality work correctly.
+Not verified end-to-end. 
 
----
+7. 
+Full CSS conformance/accessibility audit 
 
-## 21. Git and Development Process
+Not run. 
 
-Briefly describe how you used Git during the project.
+8. 
+Deployed pages, database, and upload permissions 
 
-TODO: Explain:
+Not verified; deployment URL was not provided.
 
-- how often you committed changes;
-- what types of changes your commits show;
-- how your Git history shows progressive development;
-- how your commits relate to your process-evidence records.
 
----
+Some template features are incomplete: `search.php` is absent, carousel slides use fixed images rather than latest database covers, public seller links/pages are absent, and the edit form has no image preview.
 
-## 22. AI Use Declaration
+## 15. Deployment
 
-AI tools are required for this assessment.
+Website: idk 
+Jacob 5 database name: `S4251500_159009`
+Deployment folder: a3
+Upload directory: WebProgAssignment
 
-Confirm the following:
+## 16. Git and Development Process
 
-- [ ] I used AI tools meaningfully during this assessment.
-- [ ] I recorded meaningful AI use in `process-evidence.md`.
-- [ ] I reviewed, tested, and adapted AI-assisted output.
-- [ ] I can explain all AI-assisted code submitted.
+The project is in the `S4251500/wp` GitHub repository and has a history of Assessment 3 development commits.
 
-TODO: Write 2–5 sentences explaining how AI tools supported your development.
+## 17. AI Use Declaration
 
-Detailed AI usage records must be included in `process-evidence.md`.
+AI assistance was used for implementation and debugging, with task summaries recorded in `process-evidence.md`. The PHP syntax checks and route checks listed above were run during development. The student must review the final code, run the remaining manual tests, and personally confirm that they can explain the submitted work.
 
----
+- [x] AI tools were used during this assessment.
+- [x] AI usage summaries are present in `process-evidence.md`.
+- [ ] Student has personally reviewed and tested all AI-assisted code.
+- [ ] Student can explain all AI-assisted code submitted.
 
-## 23. Process Evidence
+## 18. Process Evidence Status
 
-Confirm that your process evidence file has been completed.
+`process-evidence.md` contains 17 completed AI task records and five completed debugging records, each with a related commit link. The final reflection is still blank and should be completed by the student before submission.
 
-| Requirement | Completed? |
-|---|---|
-| `process-evidence.md` file included | TODO: Yes / No |
-| At least 5 debugging records included | TODO: Yes / No |
-| At least 5 meaningful AI usage records included | TODO: Yes / No |
-| Relevant commit links included | TODO: Yes / No |
+- `process-evidence.md` included: Yes
+- At least five AI usage records: Yes
+- At least five completed debugging records: Yes
+- Related commit links in debugging records: Yes
 
----
+## 19. Known Limitations
 
-## 24. Known Issues or Limitations
+Search - `search.php` and keyword search are not implemented. 
 
-List any known issues or limitations in your submitted project.
+Seller discovery - The seller page is restricted to the signed-in user's own profile/listings; public seller pages and seller links are not implemented.
 
-| Issue or limitation | Explanation |
-|---|---|
-| TODO | TODO |
-| TODO | TODO |
+Home carousel - Uses fixed image files and captions rather than database records.
 
-If there are no known issues, write:
-
-> No known issues at the time of submission.
+Edit image preview - The edit form displays the current cover but has no JavaScript preview for a newly selected image.

@@ -21,113 +21,162 @@ You must maintain this file throughout development.
 
 ## Bug 1
 
-**Date Identified:**  
-(e.g., 15/03/2026)
+**Date Identified:**
+31/10/2026
 
-**Date Fixed:**  
-(e.g., 15/03/2026)
+**Date Fixed:**
+31/10/2026
 
-**File:**  
-(e.g., about.html)
+**File:**
+`a3/add.php`
 
-**Related Commit:**  
-(e.g., abc1234)
+**Related Commit:**
+[`6e0b516`](https://github.com/S4251500/wp/commit/6e0b516ae77b69fc2de14f703a495e2abd267ac2)
 
-**Symptom:**  
-What went wrong?
+**Symptom:**
+Submitting the add-book form could remain pending until PHP reported a 120-second maximum execution time error while checking for an unused cover identifier.
 
-**Steps to Reproduce:**  
-How can the issue be triggered?
+**Steps to Reproduce:**
+Submit a valid new book and cover through `add.php` while using the local database schema.
 
-**Root Cause:**  
-Why did the issue occur?
+**Root Cause:**
+The upload code was being aligned to a posted schema where `image_path` was a string, while the local `books.image_path` column was an integer. The mismatch made the cover-path collision check incompatible with the local schema; the earlier retry handling did not resolve that mismatch.
 
-**Fix:**  
-What did you change?
+**Fix:**
+Changed the image reference and collision lookup to use a positive integer matching the local `image_path` column, bound it as an integer, and bounded filename attempts.
 
-**Verification:**  
-How did you confirm the fix?
+**Verification:**
+PHP syntax and whitespace checks passed. Five integer filename lookups returned no collisions, and a later check recorded three lookup requests completing without hanging. A complete book insert was not attempted, so successful end-to-end upload was not verified.
 
 ---
 
 ## Bug 2
 
+**Date Identified:**
+31/10/2026
+
+**Date Fixed:**
+31/10/2026
+
+**File:**
+`a3/add.php`
+
+**Related Commit:**
+[`6e0b516`](https://github.com/S4251500/wp/commit/6e0b516ae77b69fc2de14f703a495e2abd267ac2)
+
+**Symptom:**
+The add-book cover check failed with MySQL's “Unknown column 'cover_id'” error, preventing a book from being added.
+
+**Steps to Reproduce:**
+Submit the add-book form when the local `books` table follows the supplied schema and does not have a `cover_id` column.
+
+**Root Cause:**
+The query referenced a `cover_id` field that is not present in the schema; the supplied field for the image identifier is `image_path`.
+
+**Fix:**
+Updated the collision check and insert to use `image_path` instead of `cover_id`.
+
+**Verification:**
+The Apache error log contained repeated unknown-column errors before the change. PHP syntax and whitespace checks passed afterward, and review confirmed the query and insert use `image_path`. A full book insert was not performed.
+
+---
+
+## Bug 3
+
 **Date Identified:**  
+01/11/2026
 
 **Date Fixed:**  
+01/11/2026
 
 **File:**  
+`a3/register.php`, `a3/login.php`
 
 **Related Commit:**  
+[`c79c8ee`](https://github.com/S4251500/wp/commit/c79c8eed6dfb5872a5181edda53f1f773060795e)
 
 **Symptom:**  
+Registration displayed “Registration is unavailable right now” because MySQL could not find `users.users`.
 
 **Steps to Reproduce:**  
+Submit valid registration details when the configured connection selects the `bookverse` database, where `users` is a table rather than a separate database.
 
 **Root Cause:**  
+The registration and login queries qualified the table as `` `users`.`users` ``, although the active connection already selected `bookverse` and the table is named `users` within it.
 
 **Fix:**  
+Changed the registration and login queries to reference `users` in the currently selected database.
 
 **Verification:**  
+The Apache log confirmed `Table 'users.users' doesn't exist`; PHP syntax and whitespace checks passed after the query correction. A successful live registration and login were not verified.
+
+---
+
+## Bug 4
+
+**Date Identified:**  
+01/11/2026
+
+**Date Fixed:**  
+01/11/2026
+
+**File:**  
+`a3/assets/includes/database_connectivity.inc`, `a3/register.php`, `a3/login.php`
+
+**Related Commit:**
+[`445d4b4`](https://github.com/S4251500/wp/commit/445d4b4e52ac4191355dacc2b3c07112f2e6f93f)
+
+**Symptom:**  
+After registration failed, the username field showed `root` instead of the username entered by the user.
+
+**Steps to Reproduce:**  
+Submit valid registration data on localhost when the database insert fails, then inspect the username field when the form is redisplayed.
+
+**Root Cause:**  
+The included database connection file assigned its database account name to `$username`. PHP includes share the caller's variable scope, so that assignment overwrote the form's `$username`.
+
+**Fix:**  
+Renamed the connection variables to `$dbHost`, `$dbUsername`, `$dbPassword`, and `$dbName`, keeping database settings separate from form values.
+
+**Verification:**  
+The variable collision is present in the earlier code and removed in the linked commit. PHP syntax and whitespace checks passed afterward. A browser retest of an unsuccessful registration was not recorded.
+
+---
+
+## Bug 5
+
+**Date Identified:**
+27/10/2026
+
+**Date Fixed:**
+01/11/2026
+
+**File:**
+`a3/login.php`, `a3/register.php`
+
+**Related Commit:**
+[`adac1f6`](https://github.com/S4251500/wp/commit/adac1f60f14e18ad4b399a410bb8a09e07381053)
+
+**Symptom:**
+Submitting either account form could create a signed-in session using the submitted username without checking credentials or creating a database account.
+
+**Steps to Reproduce:**
+In the historical session-only implementation, submit any username through login or registration and observe that the site redirects to the homepage with that username in the account menu.
+
+**Root Cause:**
+The temporary form handlers copied the submitted username directly into the session and redirected without querying or updating the `users` table. The login form's password was not verified.
+
+**Fix:**
+Connected registration and login to the `users` table. Registration saves a password hash, and login verifies the stored hash before creating the authenticated session.
+
+**Verification:**
+The historical implementation is visible in the earlier code, and the linked commit adds database-backed registration and password verification. The subsequent process record documents invalid-login rejection and rolled-back checks for account insertion, hash verification, and duplicate rejection; a live registration and login were not performed.
 
 ---
 
 # 🤖 Section 2: AI Usage Log
 
 ## AI Task 1
-
-**Date:**  
-(e.g., 15/03/2026)
-
-**Task Description:**  
-What were you trying to do?
-
-**Tool Used:**  
-(e.g., GitHub Copilot, ChatGPT)
-
-**Prompt / Input:**  
-(What did you type?)
-
-**AI Output Summary:**  
-(What did it generate?)
-
-**What You Accepted:**  
-(Which parts did you keep?)
-
-**What You Changed:**  
-(What did you modify and why?)
-
-**Validation Performed:**  
-How did you test correctness?
-
-**Issues Identified:**  
-(Any errors or problems in AI output?)
-
----
-
-## AI Task 2
-
-**Date:**  
-
-**Task Description:**  
-
-**Tool Used:**  
-
-**Prompt / Input:**  
-
-**AI Output Summary:**  
-
-**What You Accepted:**  
-
-**What You Changed:**  
-
-**Validation Performed:**  
-
-**Issues Identified:**  
-
----
-
-## AI Task 3
 
 **Date:**
 25/10/2026
@@ -158,7 +207,7 @@ Form submissions are not connected to registration or login processing.
 
 ---
 
-## AI Task 4
+## AI Task 2
 
 **Date:**
 27/10/2026
@@ -189,22 +238,22 @@ None identified during syntax and whitespace checks.
 
 ---
 
-## AI Task 5
+## AI Task 3
 
 **Date:**
 27/10/2026
 
 **Task Description:**
-Style the signed-in account dropdown to match the supplied navigation screenshot.
+Style the signed-in account dropdown menu
 
 **Tool Used:**
 GitHub Copilot
 
 **Prompt / Input:**
-Make the account dropdown box look like the one in the top-right of the supplied image.
+Make the account dropdown box 
 
 **AI Output Summary:**
-Styled the account button and dropdown with the screenshot's dark colors, accent icon, compact dimensions, and hover states.
+Styled the account button and dropdown with dark colors, accent icon, compact dimensions, and hover states.
 
 **What You Accepted:**
 The account button icon and custom dark dropdown styling.
@@ -220,7 +269,7 @@ None identified during syntax and whitespace checks.
 
 ---
 
-## AI Task 6
+## AI Task 4
 
 **Date:**
 31/10/2026
@@ -251,7 +300,7 @@ The database schema is not included in the repository; the `books.coverID` colum
 
 ---
 
-## AI Task 7
+## AI Task 5
 
 **Date:**
 31/10/2026
@@ -282,7 +331,7 @@ The supplied books schema does not define `cover_id`. This was subsequently fixe
 
 ---
 
-## AI Task 8
+## AI Task 6
 
 **Date:**
 31/10/2026
@@ -313,7 +362,7 @@ No runtime database/upload test was performed.
 
 ---
 
-## AI Task 9
+## AI Task 7
 
 **Date:**
 31/10/2026
@@ -344,7 +393,7 @@ The upload and SQL operation still need runtime verification against the local d
 
 ---
 
-## AI Task 10
+## AI Task 8
 
 **Date:**
 31/10/2026
@@ -375,7 +424,7 @@ No runtime database test was performed.
 
 ---
 
-## AI Task 11
+## AI Task 9
 
 **Date:**
 31/10/2026
@@ -406,7 +455,7 @@ The posted schema defines `image_path` as `VARCHAR(255)`, but the local database
 
 ---
 
-## AI Task 12
+## AI Task 10
 
 **Date:**
 31/10/2026
@@ -437,7 +486,7 @@ The local database ENUM values also differ from the values in the posted schema;
 
 ---
 
-## AI Task 13
+## AI Task 11
 
 **Date:**
 01/11/2026
@@ -468,7 +517,7 @@ The repository does not include a database schema file; the deployed database mu
 
 ---
 
-## AI Task 14
+## AI Task 12
 
 **Date:**
 01/11/2026
@@ -489,17 +538,17 @@ Connected registration and login queries to the `users` table, retained email va
 The account queries use the configured database connection; book creation also uses that connection.
 
 **What You Changed:**
-Used the lowercase `user_id` column name in the books insert to match the supplied naming.
+Aligned the books insert to the supplied `user_ID` column name.
 
 **Validation Performed:**
 PHP syntax checks passed for `register.php`, `login.php`, and `add.php`. `git diff --check` reported no whitespace errors. Runtime database behavior was not tested.
 
 **Issues Identified:**
-The books table must include a compatible `user_id` column.
+The books table must include the supplied `user_ID` ownership column.
 
 ---
 
-## AI Task 15
+## AI Task 13
 
 **Date:**
 01/11/2026
@@ -530,12 +579,137 @@ No runtime database test was performed.
 
 ---
 
+## AI Task 14
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Add owner-only book editing and deletion from the details page, including safe cover-image replacement and cleanup.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Show Edit and Delete actions to the owner on `details.php`; implement owner-protected edit/delete flows; keep the existing cover if no replacement is uploaded and remove the previous image after a successful replacement.
+
+**AI Output Summary:**
+Added owner-conditional actions, a CSRF-protected `edit.php` form and `delete.php` handler, server-side ownership predicates, optional validated cover replacement, and post-success cleanup for unreferenced image files. Added edit/details styling and updated the CRUD and ownership notes in the README.
+
+**What You Accepted:**
+Edits and deletions require the signed-in owner ID to match `books.user_ID`. Failed updates preserve the old cover; successful replacements and deletions clean up old image files only when no remaining book references them.
+
+**What You Changed:**
+Used the local schema's `book_id`, `user_ID`, and integer `image_path` fields.
+
+**Validation Performed:**
+PHP syntax checks passed for the changed PHP pages and `git diff --check` reported no whitespace errors. Live owner/edit/delete and image-upload behavior was not tested.
+
+**Issues Identified:**
+Runtime verification requires an authenticated account that owns a book and a writable cover-image directory.
+
+---
+
+## AI Task 15
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Add an authenticated profile-and-books page reachable from the account dropdown.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Add a seller page matching the supplied profile-and-books screenshot and link it from the account dropdown.
+
+**AI Output Summary:**
+Added a session-protected `seller.php` page that retrieves the current user's profile and their own books with prepared statements, displays a profile panel and responsive book-card grid, and added the account dropdown link.
+
+**What You Accepted:**
+The seller page uses the session `user_id` to restrict both the profile lookup and book listings, and links each book card to its details page.
+
+**What You Changed:**
+Used the supplied local fields `users.user_id`, `books.user_ID`, and integer `books.image_path`.
+
+**Validation Performed:**
+All Assessment 3 PHP pages passed syntax checks, and `git diff --check` reported no whitespace errors. An anonymous request to `seller.php` redirected to login; an authenticated local session loaded the page with HTTP 200 and rendered the profile layout.
+
+**Issues Identified:**
+The page requires an authenticated session and matching database records for full visual verification.
+
+---
+
+## AI Task 16
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Move the My Books link from the main navigation to the top-right account dropdown.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Place the My Books menu in the top-right dropdown as shown in the supplied screenshot.
+
+**AI Output Summary:**
+Removed the standalone navigation dropdown and added “My Profile & Books” above Logout in the existing account dropdown.
+
+**What You Accepted:**
+The account menu remains available to authenticated users and opens the existing seller page.
+
+**What You Changed:**
+Matched the screenshot’s “My Profile & Books” label.
+
+**Validation Performed:**
+`nav.inc` passed PHP syntax validation, `git diff --check` passed, and a navigation search confirmed the profile link is in the top-right account menu with no separate left-side profile menu.
+
+**Issues Identified:**
+No runtime visual test was performed.
+
+---
+
+## AI Task 17
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Store uploaded book covers in the existing `assets/images/covers/` directory.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Change uploaded image storage from `assets/images/` to `assets/images/covers/`.
+
+**AI Output Summary:**
+Changed add/edit upload destinations, updated all book-cover readers and cleanup handlers, and moved existing numeric uploaded cover files into the covers folder.
+
+**What You Accepted:**
+Book `image_path` values continue to contain numeric identifiers; pages resolve those identifiers under `assets/images/covers/`.
+
+**What You Changed:**
+Moved the existing numeric JPG/PNG cover files from `assets/images/` into `assets/images/covers/`.
+
+**Validation Performed:**
+All Assessment 3 PHP pages passed syntax validation. The scoped `git diff --check` passed for implementation and evidence files; the README was excluded because it contains pre-existing trailing whitespace. Confirmed uploaded-image write, lookup, replacement, and deletion paths target `assets/images/covers/`; moved existing numeric cover files there and retained the previously tracked cover assets in Git. Local book image IDs `710079749`, `1580085397`, and `1542284776` resolve to files in the covers folder. The local book with `image_path` 0 has no cover file. Runtime upload/edit/delete was not performed.
+
+**Issues Identified:**
+No runtime add/edit/delete upload was performed.
+
+---
+
 # 📌 Final Reflection (End of Assessment)
 
 **What AI was most useful for:**  
-
-**Where AI was incorrect or misleading:**  
+Creating formatting of .php files aswell as formulating logic for website processes 
 
 **What you learned about debugging:**  
+Not all AI code is flawless.
 
 **How your approach changed over time:**  
+The AI would get worst the more I used a given chat, so reseting the chat would get a better result.

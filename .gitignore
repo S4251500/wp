@@ -11,3 +11,8 @@ a3/assets/images/covers/*
 
 # Except .gitkeep
 !a3/assets/images/covers/.gitkeep
+
+# Preserve existing tracked book-cover assets after moving them into covers
+!a3/assets/images/covers/1136919072.jpg
+!a3/assets/images/covers/1580085397.jpg
+!a3/assets/images/covers/710079749.jpg
