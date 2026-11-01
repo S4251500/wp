@@ -6,22 +6,22 @@ ini_set('display_errors', 1);
 if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.0.0.1') {
 
     // Localhost
-    $host = "localhost";
-    $username = "root";
-    $password = "";
-    $database = "bookverse";
+    $dbHost = "localhost";
+    $dbUsername = "root";
+    $dbPassword = "";
+    $dbName = "bookverse";
 
 } else {
 
     // Jacob 5 / Coreteaching
-    $host = "talsprddb02.int.its.rmit.edu.au";
-    $username = "S4251500";
-    $password = "oLJwnQ_!hQB8kqav8M";
-    $database = "S4251500_159009";
+    $dbHost = "talsprddb02.int.its.rmit.edu.au";
+    $dbUsername = "S4251500";
+    $dbPassword = "oLJwnQ_!hQB8kqav8M";
+    $dbName = "S4251500_159009";
 }
 
 // MySQLi procedural connection
-$conn = mysqli_connect($host, $username, $password, $database);
+$conn = mysqli_connect($dbHost, $dbUsername, $dbPassword, $dbName);
 
 // Check connection
 if (!$conn) {

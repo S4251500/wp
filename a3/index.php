@@ -117,10 +117,11 @@ if (is_string($loginSuccessMessage) && $loginSuccessMessage !== ""):
             <?php else: ?>
                 <?php foreach ($featuredBooks as $book): ?>
                     <?php
-                    $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+                    $status = in_array($book["status"], ["available", "unavailable", "sold"], true)
                         ? $book["status"]
-                        : "Reserved";
-                    $statusClass = strtolower($status);
+                        : "unavailable";
+                    $statusLabel = ucfirst($status);
+                    $statusClass = $status;
                     $image_path = $book["image_path"] ?? "./assets/images/allBooks.svg";
                     ?>
                     <article class="featured-book-card">
@@ -143,7 +144,7 @@ if (is_string($loginSuccessMessage) && $loginSuccessMessage !== ""):
                                 </a>
                             <?php else: ?>
                                 <span class="book-badge <?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>">
-                                    <?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>
+                                    <?php echo htmlspecialchars($statusLabel, ENT_QUOTES, "UTF-8"); ?>
                                 </span>
                             <?php endif; ?>
                         </div>

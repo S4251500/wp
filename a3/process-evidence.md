@@ -437,6 +437,99 @@ The local database ENUM values also differ from the values in the posted schema;
 
 ---
 
+## AI Task 13
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Implement the account validation, database-backed login, book ownership, and authenticated Add Book access in Assessment 3.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+The account registration, login verification, Add Book access, and book owner requirements previously requested for Assessment 2 were intended for Assessment 3. Also change book conditions to New, Fair, and Old.
+
+**AI Output Summary:**
+Connected registration and login to the Assessment 3 `users` table, validates email and password confirmation, uses bcrypt hashes and unique username/email constraints, gates `add.php` behind a valid session, writes the session user ID to `books.user_ID`, and aligns condition and status values to the local database ENUMs.
+
+**What You Accepted:**
+Only a database-verified password creates the authenticated `user_id` and `username` session. Anonymous users are redirected from `add.php`, and the Add Book navigation and details-page shortcut are hidden from them.
+
+**What You Changed:**
+Used the actual Assessment 3 schema: `users.user_id`, `users.password`, and `books.user_ID`. Registration supplies empty values for the required profile columns and sets `joined_at` to the current time. Updated book condition and availability values to match the local ENUMs.
+
+**Validation Performed:**
+Confirmed the local `users` and `books` column definitions and verified that the `users` table has unique username/email keys. PHP syntax and whitespace checks passed. Anonymous HTTP requests to `add.php` returned a redirect to `login.php`, the anonymous homepage had no Add Book link, invalid login credentials were rejected, and invalid registration email/password confirmation was rejected. A rolled-back database transaction verified account insertion, password-hash verification, duplicate rejection, and the owner-linked book insert without retaining test rows.
+
+**Issues Identified:**
+The repository does not include a database schema file; the deployed database must use compatible `users` and `books` columns and ENUM values.
+
+---
+
+## AI Task 14
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Use the `users` table in the configured BookVerse database for registration and login, validate email addresses, prevent duplicate accounts, and associate added books with the authenticated user.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Implement registration and login using the configured database's `users` table, reject invalid emails and duplicate accounts, create a session after authentication, and save the account `user_id` when adding a book.
+
+**AI Output Summary:**
+Connected registration and login queries to the `users` table, retained email validation and duplicate-key handling, and used the session `user_id` in the book insert.
+
+**What You Accepted:**
+The account queries use the configured database connection; book creation also uses that connection.
+
+**What You Changed:**
+Used the lowercase `user_id` column name in the books insert to match the supplied naming.
+
+**Validation Performed:**
+PHP syntax checks passed for `register.php`, `login.php`, and `add.php`. `git diff --check` reported no whitespace errors. Runtime database behavior was not tested.
+
+**Issues Identified:**
+The books table must include a compatible `user_id` column.
+
+---
+
+## AI Task 15
+
+**Date:**
+01/11/2026
+
+**Task Description:**
+Fix registration and login using the database username instead of the submitted account username.
+
+**Tool Used:**
+GitHub Copilot in VS Code
+
+**Prompt / Input:**
+Investigate why `root` appears in the registration username field after registration fails.
+
+**AI Output Summary:**
+Renamed the shared database connection variables to `$dbHost`, `$dbUsername`, `$dbPassword`, and `$dbName` so including the connection file no longer overwrites page form variables such as `$username` and `$password`.
+
+**What You Accepted:**
+The database connection include now uses dedicated variable names, preserving submitted account values for registration and login.
+
+**What You Changed:**
+No additional changes.
+
+**Validation Performed:**
+PHP syntax checks passed for the database connection include, `register.php`, and `login.php`. `git diff --check` reported no whitespace errors.
+
+**Issues Identified:**
+No runtime database test was performed.
+
+---
+
 # 📌 Final Reflection (End of Assessment)
 
 **What AI was most useful for:**  

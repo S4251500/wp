@@ -281,11 +281,13 @@ TODO: Explain:
 
 | Page or action | Who can access it? | How access is checked |
 |---|---|---|
-| `add.php` | TODO | TODO |
+| `add.php` | Authenticated users | The page validates the session `user_id` before processing the form or displaying it; new rows store that ID in `books.user_ID`. |
 | `edit.php` | TODO | TODO |
 | Delete action | TODO | TODO |
 | Owner edit/delete buttons | TODO | TODO |
 | Anonymous visitor pages | TODO | TODO |
+
+Registration validates an email address, checks the password confirmation, stores a bcrypt password hash, and relies on the database's unique username and email constraints to prevent duplicates. Login looks up the username in `users` and creates `user_id` and `username` session values only after `password_verify()` succeeds. The Add Book navigation link is shown only for authenticated sessions, and direct requests to `add.php` redirect to login.
 
 ---
 

@@ -1,4 +1,12 @@
 <body>
+    <?php
+    $currentUserId = filter_var($_SESSION["user_id"] ?? null, FILTER_VALIDATE_INT);
+    $isAuthenticated = $currentUserId !== false
+        && $currentUserId > 0
+        && isset($_SESSION["username"])
+        && is_string($_SESSION["username"])
+        && $_SESSION["username"] !== "";
+    ?>
     <header class="navbar">
         <div class="nav-logo">
             <a href="index.php">
@@ -15,13 +23,15 @@
                             aria-hidden="true"></img>Browse Books</a></li>
                 <li><a href="gallery.php"><img src="./assets/images/galleryIcon.svg" class="nav-link-icon"
                             aria-hidden="true"></img>Gallery</a></li>
-                <li><a href="add.php"><img src="./assets/images/add.svg" class="nav-link-icon"
-                            aria-hidden="true"></img>Add Book</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="add.php"><img src="./assets/images/add.svg" class="nav-link-icon"
+                                aria-hidden="true"></img>Add Book</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
 
         <ul class="nav-account-links" aria-label="Account navigation">
-            <?php if (isset($_SESSION["username"]) && is_string($_SESSION["username"]) && $_SESSION["username"] !== ""): ?>
+            <?php if ($isAuthenticated): ?>
                 <li class="dropdown">
                     <button class="nav-account-toggle dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">

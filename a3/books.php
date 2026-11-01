@@ -51,9 +51,9 @@ if ($stmt === false) {
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="filterDropdown" aria-label="Filter books by status">
                     <li><a class="dropdown-item active" href="#" data-status="all">All Books</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="Available">Available</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="Reserved">Reserved</a></li>
-                    <li><a class="dropdown-item" href="#" data-status="Sold">Sold</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="available">Available</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="unavailable">Unavailable</a></li>
+                    <li><a class="dropdown-item" href="#" data-status="sold">Sold</a></li>
                 </ul>
             </div>
         </div>
@@ -69,10 +69,11 @@ if ($stmt === false) {
             <?php else: ?>
                 <?php foreach ($books as $book): ?>
                     <?php
-                    $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+                    $status = in_array($book["status"], ["available", "unavailable", "sold"], true)
                         ? $book["status"]
-                        : "Reserved";
-                    $statusClass = strtolower($status);
+                        : "unavailable";
+                    $statusLabel = ucfirst($status);
+                    $statusClass = $status;
                     ?>
                     <li class="book-item" data-status="<?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>">
                         <div class="book-info">
@@ -88,7 +89,7 @@ if ($stmt === false) {
                             <span class="book-author"><?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></span>
                         </div>
                         <span class="book-year"><?php echo htmlspecialchars($book["publication_year"], ENT_QUOTES, "UTF-8"); ?></span>
-                        <span class="book-status status-<?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>"><?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?></span>
+                        <span class="book-status status-<?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>"><?php echo htmlspecialchars($statusLabel, ENT_QUOTES, "UTF-8"); ?></span>
                     </li>
                 <?php endforeach; ?>
                 <li class="book-item empty-state<?php echo $books ? " d-none" : ""; ?>" id="booksEmptyState">

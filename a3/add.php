@@ -1,4 +1,14 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+$userId = filter_var($_SESSION["user_id"] ?? null, FILTER_VALIDATE_INT);
+if ($userId === false || $userId < 1) {
+    header("Location: login.php");
+    exit;
+}
+
 $formData = [
     "title" => "",
     "author" => "",
@@ -8,7 +18,7 @@ $formData = [
     "isbn" => "",
     "book_condition" => "",
     "description" => "",
-    "status" => "Available"
+    "status" => "available"
 ];
 $errors = [];
 
@@ -45,10 +55,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (strlen($formData["isbn"]) > 20) {
         $errors[] = "ISBN must be 20 characters or fewer.";
     }
-    if (!in_array($formData["book_condition"], ["New", "Gently Used", "Fair"], true)) {
+    if (!in_array($formData["book_condition"], ["new", "fair", "old"], true)) {
         $errors[] = "Select a valid book condition.";
     }
-    if (!in_array($formData["status"], ["Available", "Reserved", "Sold"], true)) {
+    if (!in_array($formData["status"], ["available", "unavailable", "sold"], true)) {
         $errors[] = "Select a valid availability status.";
     }
     if (!isset($_POST["agreement"])) {
@@ -146,8 +156,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             } elseif (!$errors) {
                 $stmt = mysqli_prepare(
                     $conn,
-                    "INSERT INTO books (title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "INSERT INTO books (title, author, genre, publication_year, price, isbn, book_condition, description, status, image_path, user_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 );
 
                 if ($stmt === false) {
@@ -159,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if (
                         !mysqli_stmt_bind_param(
                             $stmt,
-                            "sssidssssi",
+                            "sssidssssii",
                             $formData["title"],
                             $formData["author"],
                             $formData["genre"],
@@ -169,7 +179,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             $formData["book_condition"],
                             $formData["description"],
                             $formData["status"],
-                            $image_path
+                            $image_path,
+                            $userId
                         ) || !mysqli_stmt_execute($stmt)
                     ) {
                         error_log("Unable to add book: " . mysqli_stmt_error($stmt));
@@ -257,9 +268,9 @@ include __DIR__ . "/assets/includes/nav.inc";
                 Condition</label>
             <select id="book-condition" name="book_condition" required>
                 <option value="" <?php echo $formData["book_condition"] === "" ? "selected" : ""; ?>>Select condition</option>
-                <option value="New" <?php echo $formData["book_condition"] === "New" ? "selected" : ""; ?>>New</option>
-                <option value="Gently Used" <?php echo $formData["book_condition"] === "Gently Used" ? "selected" : ""; ?>>Gently Used</option>
-                <option value="Fair" <?php echo $formData["book_condition"] === "Fair" ? "selected" : ""; ?>>Fair</option>
+                <option value="new" <?php echo $formData["book_condition"] === "new" ? "selected" : ""; ?>>New</option>
+                <option value="fair" <?php echo $formData["book_condition"] === "fair" ? "selected" : ""; ?>>Fair</option>
+                <option value="old" <?php echo $formData["book_condition"] === "old" ? "selected" : ""; ?>>Old</option>
             </select>
         </div>
 
@@ -280,9 +291,9 @@ include __DIR__ . "/assets/includes/nav.inc";
             <label for="status"><img src="./assets/images/availability.svg" alt=""
                     aria-hidden="true">Availability Status</label>
             <select id="status" name="status" required>
-                <option value="Available" <?php echo $formData["status"] === "Available" ? "selected" : ""; ?>>Available</option>
-                <option value="Reserved" <?php echo $formData["status"] === "Reserved" ? "selected" : ""; ?>>Reserved</option>
-                <option value="Sold" <?php echo $formData["status"] === "Sold" ? "selected" : ""; ?>>Sold</option>
+                <option value="available" <?php echo $formData["status"] === "available" ? "selected" : ""; ?>>Available</option>
+                <option value="unavailable" <?php echo $formData["status"] === "unavailable" ? "selected" : ""; ?>>Unavailable</option>
+                <option value="sold" <?php echo $formData["status"] === "sold" ? "selected" : ""; ?>>Sold</option>
             </select>
         </div>
 

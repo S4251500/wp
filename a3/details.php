@@ -1,4 +1,9 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$currentUserId = filter_var($_SESSION["user_id"] ?? null, FILTER_VALIDATE_INT);
+
 include __DIR__ . "/assets/includes/database_connectivity.inc";
 
 $pageTitle = "Book Details - BookVerse";
@@ -85,10 +90,11 @@ include __DIR__ . "/assets/includes/nav.inc";
         </div>
     <?php else: ?>
         <?php
-        $status = in_array($book["status"], ["Available", "Reserved", "Sold"], true)
+        $status = in_array($book["status"], ["available", "unavailable", "sold"], true)
             ? $book["status"]
-            : "Reserved";
-        $statusClass = strtolower($status);
+            : "unavailable";
+        $statusLabel = ucfirst($status);
+        $statusClass = $status;
         $coverImage = null;
         $image_path = $book["image_path"];
         $coverNumber = filter_var($image_path, FILTER_VALIDATE_INT);
@@ -120,7 +126,7 @@ include __DIR__ . "/assets/includes/nav.inc";
                 <h1><?php echo htmlspecialchars($book["title"], ENT_QUOTES, "UTF-8"); ?></h1>
                 <p class="details-author">by <?php echo htmlspecialchars($book["author"], ENT_QUOTES, "UTF-8"); ?></p>
                 <span class="details-status status-<?php echo htmlspecialchars($statusClass, ENT_QUOTES, "UTF-8"); ?>">
-                    <?php echo htmlspecialchars($status, ENT_QUOTES, "UTF-8"); ?>
+                    <?php echo htmlspecialchars($statusLabel, ENT_QUOTES, "UTF-8"); ?>
                 </span>
 
                 <dl class="details-list">
@@ -138,7 +144,7 @@ include __DIR__ . "/assets/includes/nav.inc";
                     </div>
                     <div>
                         <dt>Condition:</dt>
-                        <dd><?php echo htmlspecialchars($book["book_condition"], ENT_QUOTES, "UTF-8"); ?></dd>
+                        <dd><?php echo htmlspecialchars(ucfirst($book["book_condition"]), ENT_QUOTES, "UTF-8"); ?></dd>
                     </div>
                     <div>
                         <dt>Price:</dt>
@@ -153,7 +159,9 @@ include __DIR__ . "/assets/includes/nav.inc";
 
                 <div class="details-actions">
                     <a class="btn details-back" href="books.php">&larr; Back to Books</a>
-                    <a class="btn details-similar" href="add.php">+ Add Similar Book</a>
+                    <?php if ($currentUserId !== false && $currentUserId > 0): ?>
+                        <a class="btn details-similar" href="add.php">+ Add Similar Book</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </article>
